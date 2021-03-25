@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="150sp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:foreground="@drawable/rounded_image"
+        >
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:src="@drawable/default_avatar"
+            android:scaleType="fitCenter"
+            style="@style/AvatarImage"/>
+    </androidx.cardview.widget.CardView>
+    <RelativeLayout
+        android:layout_toRightOf="@id/cover"
+        android:layout_width="match_parent"
+        android:layout_height="86dp">
+        <RelativeLayout
+            android:layout_centerVertical="true"
+            android:paddingRight="8dp"
+            android:layout_toLeftOf="@id/btnRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvName"
+                android:text="Tên bạn"
+                android:layout_alignParentLeft="true"
+                style="@style/TextViewName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvInfo"
+                android:text="Nội dung tin nhắn dfjk fjdfj jfjdj jfdjf jfdjdf jfdjf jfd"
+                style="@style/TextViewMessage"
+                android:layout_below="@id/tvName"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+        <Button
+            android:id="@+id/btnRequest"
+            android:text="Kết bạn"
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:background="@drawable/button_gradient_blue"
+            android:layout_width="120dp"
+            android:layout_height="35dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="8dp"
+            />
+        <TextView
+            android:layout_alignParentBottom="true"
+            android:background="@color/black"
+            style="@style/Line"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

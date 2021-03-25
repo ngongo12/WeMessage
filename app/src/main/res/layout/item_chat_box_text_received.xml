@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:text="20:10, 20/03/2021"
+        style="@style/TextViewTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="18dp"
+        android:layout_marginTop="8dp"
+        >
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cover"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="150sp"
+            android:layout_alignParentLeft="true"
+            android:foreground="@drawable/rounded_image"
+            >
+            <ImageView
+                android:id="@+id/ivAvatar"
+                android:src="@drawable/default_avatar"
+                android:scaleType="fitCenter"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                style="@style/AvatarSmallImage"/>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvContent"
+            android:layout_toRightOf="@id/cover"
+            android:layout_marginLeft="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="10dp"
+            >
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvContent"
+                    android:text="sdfsdfsdfsdfsdfsđsfsdfdfasdfasdfasdfassdffsdfsđsfsdf"
+                    style="@style/TextViewTextContentReceive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
+
+</LinearLayout>

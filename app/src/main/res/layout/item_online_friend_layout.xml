@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="8dp"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="150sp"
+        android:layout_gravity="center"
+        android:layout_below="@id/ivWallpaper"
+        android:layout_centerHorizontal="true"
+        android:foreground="@drawable/rounded_image"
+        >
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:src="@drawable/default_avatar"
+            android:scaleType="fitCenter"
+            style="@style/AvatarImage"/>
+    </androidx.cardview.widget.CardView>
+    <TextView
+        android:id="@+id/tvName"
+        android:text="Ngô Quốc Vinh"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:maxLines="2"
+        style="@style/TextWithAvatar"
+        android:autoSizeTextType="uniform"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+</LinearLayout>
