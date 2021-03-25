@@ -84,7 +84,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void createNewUser() {
-        progressDialog.setTitle("Tạo tài khoản mới");
+        //progressDialog.setTitle("Tạo tài khoản mới");
         progressDialog.setMessage("Đang tạo tài khoản, hãy chờ 1 lát...");
         progressDialog.show();
         mAuth.createUserWithEmailAndPassword(email, pass)

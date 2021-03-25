@@ -87,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login() {
-        progressDialog.setTitle("Đăng nhập");
+        //progressDialog.setTitle("Đăng nhập");
         progressDialog.setMessage("Đang đăng nhập, chờ chút...");
         progressDialog.show();
         mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
