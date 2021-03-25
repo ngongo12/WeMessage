@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/item_message"
+        android:title="Tin nhắn"
+        android:icon="@drawable/ic_message"/>
+    <item
+        android:id="@+id/item_friend"
+        android:title="Bạn bè"
+        android:icon="@drawable/ic_friend"/>
+    <item
+        android:id="@+id/item_group"
+        android:title="Nhóm"
+        android:icon="@drawable/ic_group"/>
+    <item
+        android:id="@+id/item_other"
+        android:title="Thêm"
+        android:icon="@drawable/ic_other"/>
+</menu>

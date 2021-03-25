@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".LoginActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:background="@drawable/bg_login"
+        android:orientation="vertical">
+        <TextView
+            android:text="Đăng Nhập"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:textSize="50sp"
+            android:fontFamily="@font/svn_transformer"
+            android:layout_marginTop="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TIL"
+        android:layout_marginTop="90dp"
+        android:background="@drawable/edit_text_radius_black">
+
+        <ImageView
+            android:id="@+id/ivEmail"
+            android:src="@drawable/ic_email"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/ivEmail"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="20dp"
+            style="@style/LoginEditText"
+            >
+            <EditText
+                android:id="@+id/edEmail"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:background="@null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TIL"
+        android:background="@drawable/edit_text_radius_black">
+
+        <ImageView
+            android:id="@+id/ivPass"
+            android:src="@drawable/ic_password"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/ivPass"
+            android:layout_alignParentRight="true"
+            app:passwordToggleEnabled="true"
+            style="@style/LoginEditText"
+            >
+            <EditText
+                android:id="@+id/edPass"
+                android:hint="Mật khẩu"
+                android:background="@null"
+                android:inputType="textPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:text="đăng nhập"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        style="@style/btn_login"
+        android:background="@drawable/button_gradient"/>
+    <TextView
+        android:text="Quên mật khẩu?"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/purple_main"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnSignUp"
+        android:text="đăng ký"
+        android:textColor="@color/purple_main"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        style="@style/btn_login"
+        android:background="@drawable/button_bg_white"/>
+
+</LinearLayout>
