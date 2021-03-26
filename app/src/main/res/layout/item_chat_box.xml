@@ -33,27 +33,33 @@
                 android:layout_height="28dp"
                 style="@style/AvatarSmallImage"/>
         </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvContent"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_toRightOf="@id/cover"
             android:layout_marginLeft="8dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="10dp"
-            >
-            <LinearLayout
-                android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvReceive"
+                android:text="sdfsdfsdfsdfsdfsđsfsdfdfasdfasdfasdfassdffsdfsđsfsdf"
+                style="@style/TextViewTextContentReceive"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/tvContent"
-                    android:text="sdfsdfsdfsdfsdfsđsfsdfdfasdfasdfasdfassdffsdfsđsfsdf"
-                    style="@style/TextViewTextContentReceive"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvSend"
+                android:text="sdfsdfsdfsdfsdfsđsfsdfdfasdfasdfasdfassdffsdfsđsfsdf"
+                style="@style/TextViewTextContentSend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
     </RelativeLayout>
+
 
 </LinearLayout>

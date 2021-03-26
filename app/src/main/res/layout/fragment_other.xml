@@ -62,7 +62,7 @@
                 android:layout_height="0.5dp"
                 android:background="@color/greyc0"/>
             <TextView
-                android:text="Thay đổi thông tin"
+                android:text="Đăng xuất"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_width="match_parent"

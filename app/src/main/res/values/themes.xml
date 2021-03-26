@@ -141,4 +141,10 @@
         <item name="android:layout_gravity">left</item>
     </style>
     <!-- End Custommize for item of chat box -->
+
+    <!-- Customize for chat input layout -->
+    <style name="BackgroundChatIput">
+        <item name="android:background">@color/greyc0</item>
+    </style>
+    <!-- End Customize for chat input layout -->
 </resources>

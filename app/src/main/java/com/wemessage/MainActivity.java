@@ -63,10 +63,6 @@ public class MainActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         currentUserId = currentUser.getUid();
         rootRef = FirebaseDatabase.getInstance().getReference();
-        //userRef = rootRef.child("Users").getRef();
-
-        //Test nhận dữ liệu từ firebase
-        getUserInformation();
 
         //Liên kết giữa bottom navigation và viewpager
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -109,39 +105,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void getUserInformation()
-    {
-        viewPager.setCurrentItem(3);
-        bottomNavigationView.setSelectedItemId(R.id.item_other);
-        rootRef.child("Users").child(currentUserId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists())
-                {
-                    if (snapshot.hasChild("status") && snapshot.hasChild("name") && snapshot.hasChild("uid"))
-                    {
-                        String name = snapshot.child("name").getValue().toString();
-                        String status = snapshot.child("status").getValue().toString();
-                        String uid = snapshot.child("uid").getValue().toString();
-                        //Hiển thị thông tin trong fragment other
-                        ((OtherFragment)((MainViewPagerAdapter)viewPager.getAdapter()).getItem(3)).displayInfomation(name);
-                        Toast.makeText(MainActivity.this, "Xin chào: " + name, Toast.LENGTH_SHORT).show();
-                        Toast.makeText(MainActivity.this, "Uid: " + uid, Toast.LENGTH_SHORT).show();
-                        Toast.makeText(MainActivity.this, "Trạng thái: " + status, Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-                        Toast.makeText(MainActivity.this, "Không có thông tin cá nhân", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
 
     private void updateUserState(String state)
     {
@@ -149,6 +112,14 @@ public class MainActivity extends AppCompatActivity {
         stateMap.put("state", state);
         stateMap.put("time", sdf.format(new Date()));
         rootRef.child("Users").child(currentUserId).updateChildren(stateMap);
+    }
+
+    public void logout()
+    {
+        mAuth.signOut();
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
