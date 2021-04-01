@@ -10,9 +10,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,13 +41,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.view.animation.Animation.START_ON_FIRST_FRAME;
+
 public class ChatWithFriendActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     TextView tvFriendName, tvFriendStatus;
     EditText edMessage;
-    Button btnSend;
+    ImageView btnSend;
     RecyclerView rcv;
+    LinearLayout layout_icon;
     SwipeRefreshLayout swipeLayout;
     int numLimit = 8;
 
@@ -65,8 +74,9 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         //Ánh xạ các view
         toolbar = findViewById(R.id.toolbar);
         edMessage = findViewById(R.id.edMessage);
-        btnSend = findViewById(R.id.btnSend);
+        btnSend = findViewById(R.id.ivSend);
         rcv = findViewById(R.id.rcv);
+        layout_icon = findViewById(R.id.layout_icon);
         swipeLayout = findViewById(R.id.swipeLayout);
 
         //Set layout cho rcv
@@ -124,6 +134,42 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                         .setQuery(messageRef.child(currentUserId).child(myFriendId).limitToLast(numLimit), Message.class)
                         .build());
                 swipeLayout.setRefreshing(false);
+            }
+        });
+
+        //Sự kiện khi nhập vào edMessage
+        edMessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) layout_icon.getLayoutParams();
+                if(edMessage.getText().toString().equals(""))
+                {
+                    //Nếu ko có nội dung thì ẩn
+                    btnSend.setVisibility(View.INVISIBLE);
+
+                    //Hiện layout_icon
+                    params.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    layout_icon.setLayoutParams(params);
+                }
+                else
+                {
+                    //Nếu có nội dung thì hiện
+                    btnSend.setVisibility(View.VISIBLE);
+
+                    //Ẩn layout_icon
+                    params.width = 0;
+                    layout_icon.setLayoutParams(params);
+                }
             }
         });
     }

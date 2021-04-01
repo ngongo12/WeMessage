@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/black11"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChatWithFriendActivity">
@@ -23,23 +24,9 @@
     <RelativeLayout
         android:id="@+id/layout_chat"
         android:layout_alignParentBottom="true"
-        android:theme="@style/BackgroundChatIput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <EditText
-            android:id="@+id/edMessage"
-            android:inputType="text"
-            android:layout_toLeftOf="@id/btnSend"
-            android:layout_alignParentLeft="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <Button
-            android:id="@+id/btnSend"
-            android:text="Gửi"
-            android:background="@drawable/button_gradient_blue"
-            android:layout_alignParentRight="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <include layout="@layout/chat_input_layout"/>
     </RelativeLayout>
 
 </RelativeLayout>
