@@ -58,7 +58,7 @@ public class MessageFragment extends Fragment {
 
         //Thực hiện query
         FirebaseRecyclerOptions<FriendInfo> options = new FirebaseRecyclerOptions.Builder<FriendInfo>()
-                .setQuery(friendRef, FriendInfo.class)
+                .setQuery(friendRef.orderByKey(), FriendInfo.class)
                 .build();
 
         friendAdapter = new FriendAdapter(options, MessageFragment.this, currentUserId);

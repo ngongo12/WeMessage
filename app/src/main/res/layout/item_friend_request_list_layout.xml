@@ -21,49 +21,53 @@
             android:scaleType="fitCenter"
             style="@style/AvatarImage"/>
     </androidx.cardview.widget.CardView>
+
     <RelativeLayout
-        android:layout_toRightOf="@id/cover"
         android:layout_width="match_parent"
-        android:layout_height="86dp">
+        android:layout_height="86dp"
+        android:layout_toRightOf="@id/cover">
+
         <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:paddingRight="8dp"
             android:layout_toLeftOf="@id/btnRequest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:paddingRight="8dp">
+
             <TextView
                 android:id="@+id/tvName"
-                android:text="Tên bạn"
-                android:layout_alignParentLeft="true"
                 style="@style/TextViewName"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="Tên bạn" />
 
             <TextView
                 android:id="@+id/tvInfo"
-                android:text="Nội dung tin nhắn dfjk fjdfj jfjdj jfdjf jfdjdf jfdjf jfd"
                 style="@style/TextViewMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/tvName"
                 android:layout_centerVertical="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:text="Nội dung tin nhắn dfjk fjdfj jfjdj jfdjf jfdjdf jfdjf jfd" />
         </RelativeLayout>
+
         <Button
             android:id="@+id/btnRequest"
-            android:text="Kết bạn"
-            android:textSize="15sp"
-            android:textColor="@color/white"
-            android:background="@drawable/button_gradient_blue"
-            android:layout_width="120dp"
-            android:layout_height="35dp"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="8dp"
-            />
+            android:layout_marginRight="16dp"
+            android:background="@drawable/button_gradient_blue"
+            android:text="Kết bạn"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+
         <TextView
-            android:layout_alignParentBottom="true"
-            android:background="@color/black"
-            style="@style/Line"/>
+            style="@style/Line"
+            android:layout_alignParentBottom="true" />
 
     </RelativeLayout>
 

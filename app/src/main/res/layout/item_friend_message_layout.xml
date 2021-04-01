@@ -27,7 +27,7 @@
     <RelativeLayout
         android:layout_toRightOf="@id/cover"
         android:layout_width="match_parent"
-        android:layout_height="86dp"
+        android:layout_height="92dp"
         >
         <RelativeLayout
             android:layout_centerVertical="true"
@@ -60,7 +60,6 @@
         </RelativeLayout>
         <TextView
             android:layout_alignParentBottom="true"
-            android:background="@color/black"
             style="@style/Line"/>
     </RelativeLayout>
 

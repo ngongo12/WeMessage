@@ -52,7 +52,10 @@ public class FriendAdapter extends FirebaseRecyclerAdapter<FriendInfo, FriendAda
         {
             if(model.getUid().equals(currentUserId))
             {
-                holder.layout.setVisibility(View.INVISIBLE);
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
+                params.height = 0;
+                holder.layout.setLayoutParams(params);
+                holder.layout.setVisibility(View.GONE);
                 return;
             }
         }

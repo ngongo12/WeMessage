@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -41,6 +42,8 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     EditText edMessage;
     Button btnSend;
     RecyclerView rcv;
+    SwipeRefreshLayout swipeLayout;
+    int numLimit = 8;
 
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 
@@ -64,6 +67,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         edMessage = findViewById(R.id.edMessage);
         btnSend = findViewById(R.id.btnSend);
         rcv = findViewById(R.id.rcv);
+        swipeLayout = findViewById(R.id.swipeLayout);
 
         //Set layout cho rcv
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -111,17 +115,28 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         });
 
         readMessages();
+
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                numLimit += 5;
+                adapter.updateOptions(new FirebaseRecyclerOptions.Builder<Message>()
+                        .setQuery(messageRef.child(currentUserId).child(myFriendId).limitToLast(numLimit), Message.class)
+                        .build());
+                swipeLayout.setRefreshing(false);
+            }
+        });
     }
 
     private void readMessages() {
         //Thực hiện query
         FirebaseRecyclerOptions<Message> options = new FirebaseRecyclerOptions.Builder<Message>()
-                .setQuery(messageRef.child(currentUserId).child(myFriendId), Message.class)
+                .setQuery(messageRef.child(currentUserId).child(myFriendId).limitToLast(numLimit), Message.class)
                 .build();
-
         adapter = new ReadFriendMessageAdapter(options, currentUserId, friendInfo);
-
+        adapter.startListening();
         rcv.setAdapter(adapter);
+
 
     }
 
@@ -160,6 +175,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                 if(task.isSuccessful())
                 {
                     Toast.makeText(ChatWithFriendActivity.this, "Đã gửi", Toast.LENGTH_SHORT).show();
+
                 }
                 else
                 {
