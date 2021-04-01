@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="150sp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:foreground="@drawable/rounded_image"
+        >
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:src="@drawable/default_avatar"
+            android:scaleType="fitCenter"
+            style="@style/AvatarImage"/>
+    </androidx.cardview.widget.CardView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="86dp"
+        android:layout_toRightOf="@id/cover">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/btnRequest"
+            android:paddingRight="8dp">
+
+            <TextView
+                android:id="@+id/tvName"
+                style="@style/TextViewName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="Tên bạn" />
+
+            <TextView
+                android:id="@+id/tvInfo"
+                style="@style/TextViewMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvName"
+                android:layout_centerVertical="true"
+                android:text="Nội dung tin nhắn dfjk fjdfj jfjdj jfdjf jfdjdf jfdjf jfd" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btnRequest"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_toLeftOf="@id/ivCancel"
+            android:layout_centerVertical="true"
+            android:layout_margin="8dp"
+            android:background="@drawable/button_gradient_blue"
+            android:text="Kết bạn"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+        <ImageView
+            android:id="@+id/ivCancel"
+            android:src="@drawable/ic_cancel"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"/>
+
+        <TextView
+            style="@style/Line"
+            android:layout_alignParentBottom="true" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
