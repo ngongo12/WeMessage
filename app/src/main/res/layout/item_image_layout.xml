@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/cover"
+    android:layout_margin="1dp"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/iv"
+        android:src="@drawable/default_avatar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <ImageView
+        android:id="@+id/ivCheck"
+        android:src="@drawable/ic_check"
+        android:visibility="invisible"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="16dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+</RelativeLayout>

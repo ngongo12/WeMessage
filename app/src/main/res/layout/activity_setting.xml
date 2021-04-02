@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/black22"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingActivity">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:elevation="5dp"
+        android:background="@null"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <ImageView
+        android:id="@+id/ivWallpaper"
+        android:src="@drawable/default_wallpaper"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:scaleType="fitXY"
+        android:layout_height="230dp"/>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="150sp"
+        android:layout_gravity="center"
+        android:layout_below="@id/ivWallpaper"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-70dp"
+        android:foreground="@drawable/rounded_image"
+        >
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:src="@drawable/default_avatar"
+            android:scaleType="fitCenter"
+            android:layout_width="100dp"
+            android:layout_height="100dp"/>
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>
