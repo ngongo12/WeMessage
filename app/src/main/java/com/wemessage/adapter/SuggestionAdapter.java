@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -59,6 +60,12 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
     public void onBindViewHolder(@NonNull Holder holder, int position) {
         holder.tvName.setText(list.get(position).getName());
         holder.tvInfo.setText(list.get(position).getStatus());
+
+        //Nếu có avatar thì hiển thị không thì mặc định
+        if (list.get(position).getAvatar() != null)
+        {
+            Glide.with(context).load(list.get(position).getAvatar()).into(holder.ivAvatar);
+        }
 
         //Ẩn các user có trong yêu cầu kết bạn
         myRequestRef.addValueEventListener(new ValueEventListener() {

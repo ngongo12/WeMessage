@@ -80,7 +80,7 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent avatarIntent = new Intent();
-                avatarIntent.setAction(Intent.ACTION_PICK);
+                avatarIntent.setAction(Intent.ACTION_GET_CONTENT);
                 avatarIntent.setType("image/*");
 
                 startActivityForResult(avatarIntent, GalleryPick);
@@ -91,7 +91,7 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent avatarIntent = new Intent();
-                avatarIntent.setAction(Intent.ACTION_PICK);
+                avatarIntent.setAction(Intent.ACTION_GET_CONTENT);
                 avatarIntent.setType("image/*");
 
                 startActivityForResult(avatarIntent, WallpaperPick);
