@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +31,8 @@ import com.wemessage.adapter.SuggestionAdapter;
 import com.wemessage.model.FriendInfo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SuggestionFragment extends Fragment {
 
@@ -39,7 +44,7 @@ public class SuggestionFragment extends Fragment {
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
     String currentUserId;
-    DatabaseReference usersRef;
+    DatabaseReference usersRef, requestRef;
 
     @Nullable
     @Override
@@ -63,6 +68,7 @@ public class SuggestionFragment extends Fragment {
         currentUser = mAuth.getCurrentUser();
         currentUserId = currentUser.getUid();
         usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        requestRef = FirebaseDatabase.getInstance().getReference().child("FriendRequests");
 
         displayRCV();
     }
@@ -74,17 +80,19 @@ public class SuggestionFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();
+
                 for (DataSnapshot data : snapshot.getChildren())
                 {
+                    String key = data.getKey();
                     if(!data.getKey().equals(currentUserId))
                     {
                         FriendInfo item = data.getValue(FriendInfo.class);
-                        Log.d("Loi", "Suggestion: " + item.getName());
+                        //Log.d("Loi", "Suggestion: " + item.getName());
                         list.add(item);
                     }
-                    Log.d("Loi", "Suggestion: " + list.size());
+                    //Log.d("Loi", "Suggestion: " + list.size());
                 }
-                adapter = new SuggestionAdapter(getActivity(), list);
+                adapter = new SuggestionAdapter(getActivity(), list, SuggestionFragment.this, currentUserId);
                 rcv.setAdapter(adapter);
             }
 
@@ -95,29 +103,18 @@ public class SuggestionFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    public class Holder extends RecyclerView.ViewHolder {
-
-        ImageView ivAvatar;
-        TextView tvName, tvInfo;
-        Button btnRequest;
-
-        public Holder(@NonNull View itemView) {
-            super(itemView);
-            ivAvatar = itemView.findViewById(R.id.ivAvatar);
-            tvName = itemView.findViewById(R.id.tvName);
-            tvInfo = itemView.findViewById(R.id.tvInfo);
-            btnRequest = itemView.findViewById(R.id.btnRequest);
-
-        }
+    public void addRequest(String friendId)
+    {
+        //Thêm vào friend request của myId với giá trị type send
+        requestRef.child(currentUserId).child(friendId).child("type").setValue("send")
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Toast.makeText(getContext(), "Gửi yêu cầu kết bạn thành công", Toast.LENGTH_SHORT).show();
+                }
+            });
+        //Thêm vào friend request của myId với giá trị type received
+        requestRef.child(friendId).child(currentUserId).child("type").setValue("receive");
     }
 }

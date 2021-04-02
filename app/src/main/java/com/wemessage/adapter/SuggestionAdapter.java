@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,7 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.wemessage.R;
+import com.wemessage.fragment.SuggestionFragment;
 import com.wemessage.model.FriendInfo;
 
 import java.util.ArrayList;
@@ -23,11 +32,19 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
 
     Activity context;
     ArrayList<FriendInfo> list;
+    SuggestionFragment fragment;
+    DatabaseReference myRequestRef;
 
-    public SuggestionAdapter(Activity context, ArrayList<FriendInfo> list) {
+    String currentUserId;
+
+    public SuggestionAdapter(Activity context, ArrayList<FriendInfo> list, SuggestionFragment fragment, String currentUserId) {
         this.context = context;
         this.list = list;
-        Log.d("Loi", "SuggestionAdapter: " + list.size());
+        this.fragment = fragment;
+
+        currentUserId = currentUserId;
+        myRequestRef = FirebaseDatabase.getInstance().getReference().child("FriendRequests").child(currentUserId);
+
     }
 
     @NonNull
@@ -42,6 +59,32 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
     public void onBindViewHolder(@NonNull Holder holder, int position) {
         holder.tvName.setText(list.get(position).getName());
         holder.tvInfo.setText(list.get(position).getStatus());
+
+        //Ẩn các user có trong yêu cầu kết bạn
+        myRequestRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild(list.get(position).getUid()))
+                {
+                    //Nếu có trong danh sách yêu cầu kết bạn thì ẩn đi
+                    RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
+                    params.height = 0;
+                    holder.layout.setLayoutParams(params);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        holder.btnRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragment.addRequest(list.get(position).getUid());
+            }
+        });
     }
 
     @Override
@@ -54,6 +97,7 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
         ImageView ivAvatar;
         TextView tvName, tvInfo;
         Button btnRequest;
+        RelativeLayout layout;
 
         public Holder(@NonNull View itemView) {
             super(itemView);
@@ -61,7 +105,7 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
             tvName = itemView.findViewById(R.id.tvName);
             tvInfo = itemView.findViewById(R.id.tvInfo);
             btnRequest = itemView.findViewById(R.id.btnRequest);
-
+            layout = itemView.findViewById(R.id.layout);
         }
     }
 }

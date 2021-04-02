@@ -177,12 +177,14 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     private void readMessages() {
         //Thực hiện query
         FirebaseRecyclerOptions<Message> options = new FirebaseRecyclerOptions.Builder<Message>()
-                .setQuery(messageRef.child(currentUserId).child(myFriendId).limitToLast(numLimit), Message.class)
+                .setQuery(messageRef.child(currentUserId).child(myFriendId).child("messages").limitToLast(numLimit), Message.class)
                 .build();
         adapter = new ReadFriendMessageAdapter(options, currentUserId, friendInfo);
         adapter.startListening();
         rcv.setAdapter(adapter);
 
+        //Cập nhật thời gian đọc tin mới nhất
+        messageRef.child(currentUserId).child(myFriendId).child("last_seen").setValue(sdf.format(new Date()));
 
     }
 
@@ -193,8 +195,8 @@ public class ChatWithFriendActivity extends AppCompatActivity {
             Toast.makeText(this, "Hãy nhập vào tin nhắn của bạn", Toast.LENGTH_SHORT).show();
             return;
         }
-        String myMessageRef = "Messages/" + currentUserId + "/" + myFriendId;
-        String myFriendMessageRef = "Messages/" + myFriendId + "/" + currentUserId;
+        String myMessageRef = "Messages/" + currentUserId + "/" + myFriendId + "/messages";
+        String myFriendMessageRef = "Messages/" + myFriendId + "/" + currentUserId + "/messages";
 
         DatabaseReference userMessageKeyRef
                 = rootRef.child("Messages")
