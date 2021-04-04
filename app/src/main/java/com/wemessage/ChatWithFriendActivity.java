@@ -1,6 +1,7 @@
 package com.wemessage;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -8,10 +9,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.Button;
@@ -22,9 +27,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,11 +40,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 import com.wemessage.adapter.ReadFriendMessageAdapter;
 import com.wemessage.model.FriendInfo;
 import com.wemessage.model.Message;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,23 +62,32 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     Toolbar toolbar;
     TextView tvFriendName, tvFriendStatus;
     EditText edMessage;
-    ImageView btnSend;
+    ImageView btnSend, ivPicture, ivMicro, ivEmoji;
     RecyclerView rcv;
     LinearLayout layout_icon;
     SwipeRefreshLayout swipeLayout;
     int numLimit = 8;
+
+    //Các view của dialog send Image
+    Button btnSendImg;
+    ImageView ivChoosenImg;
 
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 
     String myFriendId;
     FriendInfo friendInfo;
 
+    //Các biến dành cho firebase
     DatabaseReference rootRef, messageRef;
     FirebaseUser currentUser;
     FirebaseAuth mAuth;
     String currentUserId;
+    StorageReference imgRef;
 
     ReadFriendMessageAdapter adapter;
+
+    private static final int GalleryPick = 1;
+    Uri uriImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +98,9 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         edMessage = findViewById(R.id.edMessage);
         btnSend = findViewById(R.id.ivSend);
+        ivPicture = findViewById(R.id.ivPicture);
+        ivMicro = findViewById(R.id.ivMicro);
+        ivEmoji = findViewById(R.id.ivEmoji);
         rcv = findViewById(R.id.rcv);
         layout_icon = findViewById(R.id.layout_icon);
         swipeLayout = findViewById(R.id.swipeLayout);
@@ -94,6 +120,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         currentUserId = currentUser.getUid();
         rootRef = FirebaseDatabase.getInstance().getReference();
         messageRef = rootRef.child("Messages");
+        imgRef = FirebaseStorage.getInstance().getReference().child("messages");
 
         //Xử lý toolbar
         setSupportActionBar(toolbar);
@@ -121,6 +148,13 @@ public class ChatWithFriendActivity extends AppCompatActivity {
 
                 edMessage.setText("");
                 //edMessage.setFocusable(false);
+            }
+        });
+
+        ivPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendPicture();
             }
         });
 
@@ -174,12 +208,20 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         });
     }
 
+    private void sendPicture() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+
+        intent.setType("image/*");
+        startActivityForResult(intent, GalleryPick);
+    }
+
     private void readMessages() {
         //Thực hiện query
         FirebaseRecyclerOptions<Message> options = new FirebaseRecyclerOptions.Builder<Message>()
                 .setQuery(messageRef.child(currentUserId).child(myFriendId).child("messages").limitToLast(numLimit), Message.class)
                 .build();
-        adapter = new ReadFriendMessageAdapter(options, currentUserId, friendInfo);
+        adapter = new ReadFriendMessageAdapter(options, currentUserId, friendInfo, getApplicationContext());
         adapter.startListening();
         rcv.setAdapter(adapter);
 
@@ -195,42 +237,9 @@ public class ChatWithFriendActivity extends AppCompatActivity {
             Toast.makeText(this, "Hãy nhập vào tin nhắn của bạn", Toast.LENGTH_SHORT).show();
             return;
         }
-        String myMessageRef = "Messages/" + currentUserId + "/" + myFriendId + "/messages";
-        String myFriendMessageRef = "Messages/" + myFriendId + "/" + currentUserId + "/messages";
 
-        DatabaseReference userMessageKeyRef
-                = rootRef.child("Messages")
-                .child(currentUserId)
-                .child(myFriendId).push();
-        String messagePushId = userMessageKeyRef.getKey();
-        Map mapMessageContent = new HashMap();
-        mapMessageContent.put("message", messageContent);
-        mapMessageContent.put("type", "text");
-        mapMessageContent.put("from", currentUserId);
-
-        //Lấy thời gian gửi
-        Date date = new Date();
-        mapMessageContent.put("time", sdf.format(date));
-
-        //Bỏ chung vào 1 map để gửi lên firebase
-        Map mapMessageContentDetail = new HashMap();
-        mapMessageContentDetail.put(myMessageRef + "/" + messagePushId, mapMessageContent);
-        mapMessageContentDetail.put(myFriendMessageRef + "/" + messagePushId, mapMessageContent);
-
-        rootRef.updateChildren(mapMessageContentDetail).addOnCompleteListener(new OnCompleteListener() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                if(task.isSuccessful())
-                {
-                    Toast.makeText(ChatWithFriendActivity.this, "Đã gửi", Toast.LENGTH_SHORT).show();
-
-                }
-                else
-                {
-                    Toast.makeText(ChatWithFriendActivity.this, "Lỗi " + task.getException().toString(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        //Tiến hành gửi
+        send(messageContent, "text");
     }
 
     private void getMyFriendInfo() {
@@ -264,6 +273,126 @@ public class ChatWithFriendActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //Trước tiên xóa giá trị uri trước đó
+        uriImage = null;
+
+        //Lấy uri của hình được chọn
+        if (requestCode == GalleryPick && resultCode == RESULT_OK && data != null)
+        {
+            uriImage = data.getData();
+            openDialogSendImage();
+        }
+        else
+        {
+            Toast.makeText(this, "Không lấy được ảnh", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void openDialogSendImage() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        View view = LayoutInflater.from(getApplicationContext()).inflate(
+                R.layout.dialog_send_image,
+                null
+        );
+
+        bottomSheetDialog.setContentView(view);
+
+        btnSendImg = view.findViewById(R.id.btnSendImg);
+        ivChoosenImg = view.findViewById(R.id.ivChoosenImg);
+
+        //Set hình ảnh được chọn cho iv
+        Glide.with(getApplicationContext()).load(uriImage).into(ivChoosenImg);
+
+        //Hiển thị dialog
+        bottomSheetDialog.create();
+        bottomSheetDialog.show();
+
+        //Xử lý nút gửi hình
+        btnSendImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(uriImage == null)
+                {
+                    Toast.makeText(ChatWithFriendActivity.this, "Có lỗi trong quá trình lấy link ảnh", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                //Gửi trước hình ảnh lên storage
+                //Tạo id cho ảnh
+                String id = currentUserId.substring(0, 5) + LocalDateTime.now().toString().substring(5);
+                Log.d("Loi", "id hình " + id);
+
+                StorageReference filePath = imgRef.child(id + ".jpg");
+                filePath.putFile(uriImage)
+                        .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                if (task.isSuccessful())
+                                {
+                                    filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            //Lấy được link tiến hành lưu trữ vào database
+                                            send(uri.toString(), "image");
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    Toast.makeText(ChatWithFriendActivity.this, "Gửi ảnh thất bại", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                //Đóng dialog
+                bottomSheetDialog.dismiss();
+            }
+        });
+    }
+
+    public void send(String content, String type)
+    {
+        String myMessageRef = "Messages/" + currentUserId + "/" + myFriendId + "/messages";
+        String myFriendMessageRef = "Messages/" + myFriendId + "/" + currentUserId + "/messages";
+
+        DatabaseReference userMessageKeyRef
+                = rootRef.child("Messages")
+                .child(currentUserId)
+                .child(myFriendId).push();
+        String messagePushId = userMessageKeyRef.getKey();
+        Map mapMessageContent = new HashMap();
+        mapMessageContent.put("message", content);
+        mapMessageContent.put("type", type);
+        mapMessageContent.put("from", currentUserId);
+
+        //Lấy thời gian gửi
+        Date date = new Date();
+        mapMessageContent.put("time", sdf.format(date));
+
+        //Bỏ chung vào 1 map để gửi lên firebase
+        Map mapMessageContentDetail = new HashMap();
+        mapMessageContentDetail.put(myMessageRef + "/" + messagePushId, mapMessageContent);
+        mapMessageContentDetail.put(myFriendMessageRef + "/" + messagePushId, mapMessageContent);
+
+        rootRef.updateChildren(mapMessageContentDetail).addOnCompleteListener(new OnCompleteListener() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                if(task.isSuccessful())
+                {
+                    Toast.makeText(ChatWithFriendActivity.this, "Đã gửi", Toast.LENGTH_SHORT).show();
+
+                }
+                else
+                {
+                    Toast.makeText(ChatWithFriendActivity.this, "Lỗi " + task.getException().toString(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

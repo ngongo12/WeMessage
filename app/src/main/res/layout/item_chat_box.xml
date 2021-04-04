@@ -42,9 +42,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
+            android:layout_marginRight="16dp"
             android:orientation="vertical">
             <include
                 layout="@layout/text_content_layout"/>
+            <include
+                layout="@layout/img_content_layout"/>
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

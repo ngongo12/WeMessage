@@ -1,15 +1,20 @@
 package com.wemessage.adapter;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.wemessage.R;
@@ -20,6 +25,7 @@ public class ReadFriendMessageAdapter extends FirebaseRecyclerAdapter<Message, R
 
     String currentUserId;
     FriendInfo friendInfo;
+    Context context;
 
     /**
      * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
@@ -27,10 +33,11 @@ public class ReadFriendMessageAdapter extends FirebaseRecyclerAdapter<Message, R
      *
      * @param options
      */
-    public ReadFriendMessageAdapter(@NonNull FirebaseRecyclerOptions<Message> options, String currentUserId, FriendInfo friendInfo) {
+    public ReadFriendMessageAdapter(@NonNull FirebaseRecyclerOptions<Message> options, String currentUserId, FriendInfo friendInfo, Context context) {
         super(options);
         this.currentUserId = currentUserId;
         this.friendInfo = friendInfo;
+        this.context = context;
     }
 
     @Override
@@ -45,6 +52,9 @@ public class ReadFriendMessageAdapter extends FirebaseRecyclerAdapter<Message, R
 
         if(model.getType().equals("text"))
         {
+            Log.d("Loi", "onBindViewHolder: " + model.getMessage());
+            //Hiện layout text
+            holder.layout_text.setLayoutParams(holder.paramsHien);
             if(model.getFrom().equals(currentUserId))
             {
                 holder.tvSend.setText(model.getMessage());
@@ -54,6 +64,21 @@ public class ReadFriendMessageAdapter extends FirebaseRecyclerAdapter<Message, R
             {
                 holder.tvReceive.setText(model.getMessage());
                 holder.tvSend.setVisibility(View.INVISIBLE);
+            }
+        }
+        if(model.getType().equals("image"))
+        {
+            //Hiện layout image
+            holder.layout_img.setLayoutParams(holder.paramsHien);
+            if(model.getFrom().equals(currentUserId))
+            {
+                Glide.with(context).load(model.getMessage()).into(holder.ivSend);
+                holder.ivReceive.setVisibility(View.GONE);
+            }
+            else
+            {
+                Glide.with(context).load(model.getMessage()).into(holder.ivReceive);
+                holder.ivSend.setVisibility(View.GONE);
             }
         }
     }
@@ -72,7 +97,10 @@ public class ReadFriendMessageAdapter extends FirebaseRecyclerAdapter<Message, R
 
     public class MessageHolder extends RecyclerView.ViewHolder {
         TextView tvReceive, tvSend, tvTime;
+        RelativeLayout layout_text, layout_img;
+        ImageView ivReceive, ivSend;
         CardView cover;
+        LinearLayout.LayoutParams paramsAn, paramsHien;
         public MessageHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -80,6 +108,18 @@ public class ReadFriendMessageAdapter extends FirebaseRecyclerAdapter<Message, R
             tvSend = itemView.findViewById(R.id.tvSend);
             tvTime = itemView.findViewById(R.id.tvTime);
             cover = itemView.findViewById(R.id.cover);
+            layout_text = itemView.findViewById(R.id.layout_text);
+            layout_img = itemView.findViewById(R.id.layout_img);
+            ivReceive = itemView.findViewById(R.id.ivReceive);
+            ivSend = itemView.findViewById(R.id.ivSend);
+
+            paramsAn = (LinearLayout.LayoutParams) layout_img.getLayoutParams();
+            paramsHien = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            paramsAn.height = 0;
+
+            //Ẩn các layout
+            layout_img.setLayoutParams(paramsAn);
+            layout_text.setLayoutParams(paramsAn);
         }
     }
 }

@@ -149,4 +149,5 @@
         <item name="android:background">@color/greyc0</item>
     </style>
     <!-- End Customize for chat input layout -->
+
 </resources>
