@@ -78,7 +78,7 @@ public class FriendMessageAdapter extends RecyclerView.Adapter<FriendMessageAdap
                 }
                 if(snapshot.hasChild("avatar"))
                 {
-                    Glide.with(fragment.getContext()).load(snapshot.child("avatar").getValue().toString());
+                    Glide.with(context).load(snapshot.child("avatar").getValue().toString()).into(holder.ivAvatar);
                 }
             }
 
