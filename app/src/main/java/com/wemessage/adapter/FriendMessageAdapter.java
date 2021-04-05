@@ -131,11 +131,9 @@ public class FriendMessageAdapter extends RecyclerView.Adapter<FriendMessageAdap
                     //Xử lý tvTime
                     Long time = (new Date()).getTime() - timeSend.getTime();
                     //Trả về miligiây
-                    Log.d("Loi", "ms: " + time);
 
                     //Trả về phút
                     time = time / 60/1000;
-                    Log.d("Loi", "m: " + time);
 
                     if (time <= 60)
                     {
@@ -144,14 +142,12 @@ public class FriendMessageAdapter extends RecyclerView.Adapter<FriendMessageAdap
                     else {
                         //trả về giờ
                         time /= 60;
-                        Log.d("Loi", "h: " + time);
                         if (time <= 24) {
                             holder.tvTime.setText(time + " giờ");
                         }
                         else {
                             //trả về tuần
                             time /= 24;
-                            Log.d("Loi", "d: " + time);
                             if (time <= 7) {
                                 holder.tvTime.setText(time + " ngày");
                             } else {
