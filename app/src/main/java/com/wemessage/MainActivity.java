@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wemessage.adapter.MainViewPagerAdapter;
 import com.wemessage.fragment.OtherFragment;
+import com.wemessage.service.UpdateUserStateService;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -108,10 +109,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUserState(String state)
     {
-        Map stateMap = new HashMap<>();
-        stateMap.put("state", state);
-        stateMap.put("time", sdf.format(new Date()));
-        rootRef.child("Users").child(currentUserId).updateChildren(stateMap);
+        Intent intent = new Intent(getApplicationContext(), UpdateUserStateService.class);
+        intent.putExtra("id", currentUserId);
+        intent.putExtra("state", state);
+        intent.putExtra("time", sdf.format(new Date()));
+        startService(intent);
     }
 
     public void logout()
@@ -132,7 +134,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
         //Cập nhật trạng thái người dùng khi offline
         updateUserState("offline");
+        super.onDestroy();
     }
 }

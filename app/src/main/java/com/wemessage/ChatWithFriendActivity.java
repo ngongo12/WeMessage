@@ -414,5 +414,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         adapter.startListening();
+        //Cập nhật thời gian đọc tin mới nhất
+        messageRef.child(currentUserId).child(myFriendId).child("last_seen").setValue(sdf.format(new Date()));
     }
 }

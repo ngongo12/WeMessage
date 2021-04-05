@@ -67,13 +67,15 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
             Glide.with(context).load(list.get(position).getAvatar()).into(holder.ivAvatar);
         }
 
-        //Ẩn các user có trong yêu cầu kết bạn
+        //Hiện các user ko có trong yêu cầu kết bạn
         myRequestRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild(list.get(position).getUid()))
                 {
                     //Nếu có trong danh sách yêu cầu kết bạn thì ẩn đi
+                    holder.layout.setVisibility(View.GONE
+                    );
                     RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
                     params.height = 0;
                     holder.layout.setLayoutParams(params);
@@ -113,6 +115,7 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
             tvInfo = itemView.findViewById(R.id.tvInfo);
             btnRequest = itemView.findViewById(R.id.btnRequest);
             layout = itemView.findViewById(R.id.layout);
+
         }
     }
 }

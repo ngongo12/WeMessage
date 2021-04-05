@@ -6,11 +6,17 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -31,13 +37,24 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.EventListener;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class SettingActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     ImageView ivAvatar, ivWallpaper;
+    EditText etName, etInfo;
+    Button btnSave;
+    RadioButton rdNam,rdNu;
+    TextView tvBirth;
+    DatePickerDialog datePickerDialog;
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
     private static final int GalleryPick = 1;
     private static final int WallpaperPick = 2;
@@ -58,6 +75,12 @@ public class SettingActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         ivAvatar = findViewById(R.id.ivAvatar);
         ivWallpaper = findViewById(R.id.ivWallpaper);
+        etName=findViewById(R.id.etName);
+        etInfo=findViewById(R.id.etInfo);
+        btnSave=findViewById(R.id.btnSave);
+        rdNam=findViewById(R.id.rdNam);
+        rdNu=findViewById(R.id.rdNu);
+        tvBirth=findViewById(R.id.tvBirth);
 
 
         //Xử lý toolbar
@@ -97,6 +120,64 @@ public class SettingActivity extends AppCompatActivity {
                 startActivityForResult(avatarIntent, WallpaperPick);
             }
         });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //Lưu lại thông tin
+
+                Map infoMap = new HashMap();
+                String name=etName.getText().toString();
+                //userRef.child(currentUserId).child("name").setValue(name);
+                infoMap.put("name", name);
+
+                //info
+                infoMap.put("status", etInfo.getText().toString());
+
+                if (rdNam.isChecked()){
+                    //userRef.child(currentUserId).child("gender").setValue("Nam");
+                    infoMap.put("gender", "Nam");
+                }
+                if (rdNu.isChecked()){
+                    //userRef.child(currentUserId).child("gender").setValue("Nữ");
+                    infoMap.put("gender", "Nữ");
+                }
+                String ngaySinh=tvBirth.getText().toString();
+                //userRef.child(currentUserId).child("birthday").setValue(ngaySinh);
+                infoMap.put("birthday", ngaySinh);
+
+                //Save to database
+                userRef.child(currentUserId).updateChildren(infoMap).addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if (task.isSuccessful())
+                        {
+                            Toast.makeText(SettingActivity.this, "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                        {
+                            Toast.makeText(SettingActivity.this, "Cập nhật thông tin thất bại. " + task.getException().toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+        datePickerDialog = new DatePickerDialog(this, R.style.DatePickerTheme,new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(year, month, dayOfMonth);
+                tvBirth.setText(sdf.format(calendar.getTime()));
+            }
+        }, 1990, 0, 1);
+        tvBirth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog.show();
+            }
+        });
+
     }
 
     public void displayInfo()
@@ -106,8 +187,37 @@ public class SettingActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.hasChild("name"))
                 {
-                    //tvName.setText(snapshot.child("name").getValue().toString());
+                    etName.setText(snapshot.child("name").getValue().toString());
                 }
+                if (snapshot.hasChild("status"))
+                {
+                    etInfo.setText(snapshot.child("status").getValue().toString());
+                }
+                if (snapshot.hasChild("birthday"))
+                {
+                    tvBirth.setText(snapshot.child("birthday").getValue().toString());
+
+                    //Set lại ngày cho datepicker
+                    Calendar calendar = Calendar.getInstance();
+                    try {
+                        calendar.setTime(sdf.parse(tvBirth.getText().toString()));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    datePickerDialog.updateDate(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
+                }
+                if (snapshot.hasChild("gender"))
+                {
+                    if(snapshot.child("gender").getValue().toString().equals("Nam"))
+                    {
+                        rdNam.setChecked(true);
+                    }
+                    else
+                    {
+                        rdNu.setChecked(true);
+                    }
+                }
+
                 if (snapshot.hasChild("avatar"))
                 {
                     Glide.with(getApplicationContext()).load(snapshot.child("avatar").getValue().toString()).into(ivAvatar);

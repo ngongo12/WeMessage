@@ -15,12 +15,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.wemessage.ChatWithFriendActivity;
 import com.wemessage.R;
-import com.wemessage.adapter.FriendAdapter;
+import com.wemessage.adapter.FriendMessageAdapter;
 import com.wemessage.model.FriendInfo;
+
+import java.util.ArrayList;
 
 public class MessageFragment extends Fragment {
 
@@ -29,9 +34,11 @@ public class MessageFragment extends Fragment {
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
     String currentUserId;
-    DatabaseReference friendRef;
+    DatabaseReference messRef;
 
-    FriendAdapter friendAdapter;
+    ArrayList<String> list;
+
+    FriendMessageAdapter adapter;
 
     @Nullable
     @Override
@@ -48,22 +55,34 @@ public class MessageFragment extends Fragment {
 
         //Set layout cho rcv
         rcv.setLayoutManager(new LinearLayoutManager(getContext()));
+        list = new ArrayList();
 
         //Khởi tạo các biến dành cho firebase
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         currentUserId = currentUser.getUid();
-        friendRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        messRef = FirebaseDatabase.getInstance().getReference().child("Messages");
 
 
         //Thực hiện query
-        FirebaseRecyclerOptions<FriendInfo> options = new FirebaseRecyclerOptions.Builder<FriendInfo>()
-                .setQuery(friendRef.orderByKey(), FriendInfo.class)
-                .build();
+        messRef.child(currentUserId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                list.clear();
+                for (DataSnapshot data : snapshot.getChildren())
+                {
+                    list.add(data.getKey());
+                }
 
-        friendAdapter = new FriendAdapter(options, MessageFragment.this, currentUserId);
+                adapter = new FriendMessageAdapter(list,MessageFragment.this, currentUserId, getContext());
+                rcv.setAdapter(adapter);
+            }
 
-        rcv.setAdapter(friendAdapter);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     public void gotoChatActivity(String id)
@@ -76,12 +95,10 @@ public class MessageFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        friendAdapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        friendAdapter.startListening();
     }
 }

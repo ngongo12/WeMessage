@@ -149,5 +149,7 @@
         <item name="android:background">@color/greyc0</item>
     </style>
     <!-- End Customize for chat input layout -->
-
+    <style name="DatePickerTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@color/blue119</item>
+    </style>
 </resources>

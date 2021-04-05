@@ -38,4 +38,135 @@
             android:layout_height="100dp"/>
     </androidx.cardview.widget.CardView>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_below="@id/cover"
+        android:id="@+id/layout_info"
+        android:layout_marginTop="24dp"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:text="Tên: "
+                android:textSize="20dp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:id="@+id/tvName" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/etName"
+                android:background="@null"
+                android:inputType="textCapWords"
+                android:textColor="@color/white"
+                android:layout_marginLeft="20dp"
+                android:textSize="20dp"
+                android:layout_toRightOf="@+id/tvName"
+                android:textColorHint="@color/greyc0"
+                android:hint="Tên của bạn"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:text="Thông tin: "
+                android:textSize="20dp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:id="@+id/tvInfo" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/etInfo"
+                android:background="@null"
+                android:inputType="textCapSentences"
+                android:textColor="@color/white"
+                android:layout_marginLeft="20dp"
+                android:textSize="20dp"
+                android:layout_toRightOf="@+id/tvInfo"
+                android:textColorHint="@color/greyc0"
+                android:hint="Thông tin của bạn"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:text="Giới tính: "
+                android:textSize="20dp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:id="@+id/tvGender" />
+            <RadioGroup
+                android:layout_toRightOf="@id/tvGender"
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="20dp"
+                android:gravity="center"
+                android:layout_height="50dp">
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/rdNam"
+                    android:textColor="@color/white"
+                    android:checked="true"
+                    android:textSize="20dp"
+                    android:buttonTint="@color/white"
+                    android:text="Nam"/>
+                <RadioButton
+                    android:layout_marginLeft="30dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:buttonTint="@color/white"
+                    android:id="@+id/rdNu"
+                    android:textSize="20dp"
+                    android:text="Nữ"/>
+            </RadioGroup>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:text="Ngày sinh: "
+                android:layout_marginLeft="20dp"
+                android:textSize="20dp"
+                android:gravity="center_vertical"
+                android:id="@+id/tvNgaySinh" />
+            <TextView
+                android:id="@+id/tvBirth"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:textSize="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@+id/tvNgaySinh"
+                android:text="01-01-1990"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        android:layout_below="@id/layout_info">
+        <Button
+            android:background="@drawable/button_gradient_blue"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:text="Cập nhật"
+            android:id="@+id/btnSave"/>
+    </LinearLayout>
+
 </RelativeLayout>
