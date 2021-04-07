@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical"
     tools:context=".SignupActivity">
 
@@ -15,6 +16,7 @@
         <TextView
             android:text="Đăng Ký"
             android:textColor="@color/white"
+            android:background="@null"
             android:layout_gravity="center"
             android:textSize="50sp"
             android:fontFamily="@font/svn_transformer"
@@ -55,6 +57,7 @@
                 android:hint="Email"
                 android:inputType="textEmailAddress"
                 android:background="@null"
+                style="@style/InputBlackText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -90,6 +93,7 @@
                 android:id="@+id/edPass"
                 android:hint="Mật khẩu"
                 android:background="@null"
+                style="@style/InputBlackText"
                 android:inputType="textPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
@@ -126,6 +130,7 @@
                 android:id="@+id/edRePass"
                 android:hint="Nhập lại mật khẩu"
                 android:background="@null"
+                style="@style/InputBlackText"
                 android:inputType="textPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

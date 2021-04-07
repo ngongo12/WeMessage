@@ -16,6 +16,7 @@
         android:layout_height="match_parent">
         <EditText
             android:id="@+id/edSearch"
+            style="@style/EditSearch"
             android:hint="Tìm bạn bè ...."
             android:background="@null"
             android:layout_centerVertical="true"

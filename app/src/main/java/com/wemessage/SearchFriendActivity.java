@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wemessage.adapter.SearchFriendAdapter;
 import com.wemessage.model.FriendInfo;
 
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ public class SearchFriendActivity extends AppCompatActivity {
     String currentUserId;
 
     ArrayList<FriendInfo> list;
+    SearchFriendAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,10 @@ public class SearchFriendActivity extends AppCompatActivity {
         edSearch = toolbar.findViewById(R.id.edSearch);
         tvNotFound = findViewById(R.id.tvNotFound);
         rcv = findViewById(R.id.rcv);
+
+        //Set layout cho rcv
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        rcv.setLayoutManager(layoutManager);
 
         //Xử lý toolbar
         setSupportActionBar(toolbar);
@@ -132,6 +139,9 @@ public class SearchFriendActivity extends AppCompatActivity {
                 {
                     tvNotFound.setText("Tìm thấy " + list.size() +" kết quả tương ứng");
                 }
+                //Hiển thị rcv
+                adapter = new SearchFriendAdapter(SearchFriendActivity.this, list);
+                rcv.setAdapter(adapter);
             }
 
             @Override

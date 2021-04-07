@@ -1,16 +1,21 @@
 package com.wemessage.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -27,8 +32,11 @@ import com.wemessage.SettingActivity;
 
 public class OtherFragment extends Fragment {
 
+    String fileName = "userLog.txt";
+
     TextView tvName;
     ImageView ivAvatar, ivWallpaper;
+    SwitchCompat scDark;
     LinearLayout layoutEdit, layoutLogout, layoutRePass;
 
     DatabaseReference userRef;
@@ -54,6 +62,7 @@ public class OtherFragment extends Fragment {
         layoutRePass = getView().findViewById(R.id.layoutRePass);
         ivAvatar = getView().findViewById(R.id.ivAvatar);
         ivWallpaper = getView().findViewById(R.id.ivWallpaper);
+        scDark = getView().findViewById(R.id.scDark);
 
         //Khởi tạo các biến dành cho firebase
         mAuth = FirebaseAuth.getInstance();
@@ -77,6 +86,20 @@ public class OtherFragment extends Fragment {
         });
 
         displayInfo();
+        restoringDarkMode();
+        scDark.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                savingDarkMode();
+                if (isChecked) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                }
+                else
+                {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                }
+            }
+        });
     }
 
     public void displayInfo()
@@ -103,6 +126,30 @@ public class OtherFragment extends Fragment {
 
             }
         });
+    }
+
+    private void savingDarkMode()
+    {
+        //Tạo đối tượng
+        SharedPreferences sp = getActivity().getSharedPreferences(fileName, Context.MODE_PRIVATE);
+
+        //Tạo đối tượng editor để lưu thay đổi
+        SharedPreferences.Editor editor = sp.edit();
+
+        //Lưu mới vào
+        editor.putBoolean("dark", scDark.isChecked());
+
+        //chấp nhận lưu xuống file
+        editor.commit();
+    }
+
+    private void restoringDarkMode()
+    {
+        //Tạo đối tượng
+        SharedPreferences sp = getActivity().getSharedPreferences(fileName, Context.MODE_PRIVATE);
+
+        boolean isDark = sp.getBoolean("dark", false);
+        scDark.setChecked(isDark);
     }
 
 }

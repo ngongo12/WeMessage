@@ -165,7 +165,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
             public void onRefresh() {
                 numLimit += 5;
                 adapter.updateOptions(new FirebaseRecyclerOptions.Builder<Message>()
-                        .setQuery(messageRef.child(currentUserId).child(myFriendId).limitToLast(numLimit), Message.class)
+                        .setQuery(messageRef.child(currentUserId).child(myFriendId).child("messages").limitToLast(numLimit), Message.class)
                         .build());
                 swipeLayout.setRefreshing(false);
             }

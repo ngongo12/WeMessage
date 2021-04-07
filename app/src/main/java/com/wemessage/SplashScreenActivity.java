@@ -1,5 +1,6 @@
 package com.wemessage;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,7 +29,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         //Lấy tài khoản từ lần đăng nhập trước
         autoLogin();
-
+        restoringDarkMode();
     }
 
     private void autoLogin() {
@@ -75,5 +77,20 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         email = sp.getString("email","");
         pass = sp.getString("pass", "");
+    }
+
+    private void restoringDarkMode()
+    {
+        //Tạo đối tượng
+        SharedPreferences sp = getSharedPreferences(fileName, Context.MODE_PRIVATE);
+
+        boolean isDark = sp.getBoolean("dark", false);
+        if (isDark) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else
+        {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
     }
 }
