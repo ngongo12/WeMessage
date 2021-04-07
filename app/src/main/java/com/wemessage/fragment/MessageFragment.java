@@ -65,7 +65,7 @@ public class MessageFragment extends Fragment {
 
 
         //Thực hiện query
-        messRef.child(currentUserId).addValueEventListener(new ValueEventListener() {
+        messRef.child(currentUserId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();

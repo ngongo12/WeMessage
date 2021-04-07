@@ -6,7 +6,10 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="whitefa">#fafbfd</color>
+    <color name="whitef3">#F3F4F6</color>
 
     <color name="white_op">#8DFFFFFF</color>
 
@@ -19,10 +22,19 @@
     <color name="black1a">#1a1a1a</color>
     <color name="black22">#222222</color>
     <color name="black2c">#2c2c2c</color>
+    <color name="black2a">#2a2a2a</color>
 
     <color name="blue119">#1194ff</color>
+    <color name="blued5">#d5f1ff</color>
+    <color name="bluee2">#e2e9f1</color>
 
     <color name="greyc0">#c0c0c0</color>
     <color name="grey66">#66696e</color>
     <color name="greyb3">#b3b3b3</color>
+    <color name="grey4a">#4a4a4a</color>
+
+    <color name="greyf3">#f3f4f6</color>
+    <color name="greyle0">#e0e0e0</color>
+    <color name="siver">#858d8f</color>
+    <color name="grey94">#949494</color>
 </resources>

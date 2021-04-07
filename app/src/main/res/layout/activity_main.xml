@@ -12,7 +12,7 @@
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
         android:layout_below="@+id/toolbar"
-        android:background="@color/black"
+        style="@style/MainBackground"
         android:layout_above="@+id/botton_nav"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

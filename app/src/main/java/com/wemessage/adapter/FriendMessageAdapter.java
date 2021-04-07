@@ -1,6 +1,7 @@
 package com.wemessage.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -172,13 +173,13 @@ public class FriendMessageAdapter extends RecyclerView.Adapter<FriendMessageAdap
 
                                 if(lastSeen.compareTo(finalTimeSend) < 0) //Chưa xem
                                 {
-                                    holder.tvMessage.setTextColor(fragment.getResources().getColor(R.color.white));
                                     holder.tvMessage.setTypeface(Typeface.DEFAULT_BOLD);
+                                    holder.tvName.setTypeface(Typeface.DEFAULT_BOLD);
                                 }
                                 else
                                 {
-                                    holder.tvMessage.setTextColor(context.getResources().getColor(R.color.greyc0));
                                     holder.tvMessage.setTypeface(Typeface.DEFAULT);
+                                    holder.tvName.setTypeface(Typeface.DEFAULT);
                                 }
                             }
                         }
