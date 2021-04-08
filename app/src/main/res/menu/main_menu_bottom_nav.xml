@@ -4,17 +4,17 @@
     <item
         android:id="@+id/item_message"
         android:title="Tin nhắn"
-        android:icon="@drawable/ic_message"/>
+        android:icon="@drawable/icon_message"/>
     <item
         android:id="@+id/item_friend"
         android:title="Bạn bè"
-        android:icon="@drawable/ic_friend"/>
+        android:icon="@drawable/icon_friend"/>
     <item
         android:id="@+id/item_group"
         android:title="Nhóm"
-        android:icon="@drawable/ic_group"/>
+        android:icon="@drawable/icon_group"/>
     <item
         android:id="@+id/item_other"
         android:title="Thêm"
-        android:icon="@drawable/ic_other"/>
+        android:icon="@drawable/icon_other"/>
 </menu>

@@ -24,7 +24,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="86dp"
+        android:layout_height="88dp"
         android:layout_toRightOf="@id/cover">
 
         <RelativeLayout

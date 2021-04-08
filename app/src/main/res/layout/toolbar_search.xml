@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar android:id="@+id/toolbar"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    app:titleTextColor="@color/white"
+    app:subtitleTextColor="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/CustomToolbar"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    android:elevation="4dp"
+    >
+    <RelativeLayout
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <EditText
+            android:id="@+id/edSearch"
+            style="@style/EditSearch"
+            android:hint="Tìm bạn bè ...."
+            android:background="@null"
+            android:layout_centerVertical="true"
+            android:padding="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <requestFocus/>
+        </EditText>
+    </RelativeLayout>
+</androidx.appcompat.widget.Toolbar>

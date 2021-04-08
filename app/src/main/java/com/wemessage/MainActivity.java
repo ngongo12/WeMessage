@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -35,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     ViewPager viewPager;
     BottomNavigationView bottomNavigationView;
     Toolbar toolbar;
+    TextView tvSearch;
+    ImageView ivSearch;
     MainViewPagerAdapter pagerAdapter;
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
     Date date;
@@ -52,6 +56,28 @@ public class MainActivity extends AppCompatActivity {
         //Ánh xạ các view
         viewPager = findViewById(R.id.viewPager);
         bottomNavigationView = findViewById(R.id.botton_nav);
+        toolbar = findViewById(R.id.toolbar);
+
+        //Xử lý toolbar
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        tvSearch = toolbar.findViewById(R.id.tvSearch);
+        ivSearch = toolbar.findViewById(R.id.ivSearch);
+
+        tvSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotoSearchActivity();
+            }
+        });
+        ivSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotoSearchActivity();
+            }
+        });
+
 
         //Khởi tạo pagerAdapter
         pagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager());
@@ -104,6 +130,11 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void gotoSearchActivity() {
+        Intent intent = new Intent(MainActivity.this, SearchFriendActivity.class);
+        startActivity(intent);
     }
 
 

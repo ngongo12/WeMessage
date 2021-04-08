@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/black22"
+    style="@style/SubBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SettingActivity">
@@ -62,7 +62,6 @@
                 android:id="@+id/etName"
                 android:background="@null"
                 android:inputType="textCapWords"
-                android:textColor="@color/white"
                 android:layout_marginLeft="20dp"
                 android:textSize="20dp"
                 android:layout_toRightOf="@+id/tvName"
@@ -86,7 +85,6 @@
                 android:id="@+id/etInfo"
                 android:background="@null"
                 android:inputType="textCapSentences"
-                android:textColor="@color/white"
                 android:layout_marginLeft="20dp"
                 android:textSize="20dp"
                 android:layout_toRightOf="@+id/tvInfo"
@@ -115,18 +113,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/rdNam"
-                    android:textColor="@color/white"
+                    style="@style/RadioButton"
                     android:checked="true"
                     android:textSize="20dp"
-                    android:buttonTint="@color/white"
                     android:text="Nam"/>
                 <RadioButton
                     android:layout_marginLeft="30dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:buttonTint="@color/white"
                     android:id="@+id/rdNu"
+                    style="@style/RadioButton"
                     android:textSize="20dp"
                     android:text="Nữ"/>
             </RadioGroup>
@@ -166,6 +162,7 @@
             android:layout_width="180dp"
             android:layout_height="wrap_content"
             android:text="Cập nhật"
+            android:textColor="@color/white"
             android:id="@+id/btnSave"/>
     </LinearLayout>
 

@@ -163,7 +163,7 @@ public class SettingActivity extends AppCompatActivity {
                 });
             }
         });
-        datePickerDialog = new DatePickerDialog(this, R.style.DatePickerTheme,new DatePickerDialog.OnDateSetListener() {
+        datePickerDialog = new DatePickerDialog(this, android.R.style.Theme_Holo_Light_Dialog_MinWidth,new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 Calendar calendar = Calendar.getInstance();
