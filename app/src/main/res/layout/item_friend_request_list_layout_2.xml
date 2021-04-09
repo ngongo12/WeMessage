@@ -60,7 +60,7 @@
             android:layout_centerVertical="true"
             android:layout_margin="8dp"
             android:background="@drawable/button_gradient_blue"
-            android:text="Kết bạn"
+            android:text="Chấp nhận"
             android:textColor="@color/white"
             android:textSize="13sp" />
 
@@ -69,9 +69,10 @@
             android:src="@drawable/ic_cancel"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"
-            android:layout_width="25dp"
-            android:layout_height="25dp"/>
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="8dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"/>
 
         <TextView
             style="@style/Line"

@@ -420,6 +420,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         });
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
