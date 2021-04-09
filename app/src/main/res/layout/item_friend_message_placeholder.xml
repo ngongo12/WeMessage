@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="150sp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        style="@style/Placeholder"
+        >
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:scaleType="fitCenter"
+            android:theme="@style/Placeholder"
+            style="@style/AvatarImage"/>
+    </androidx.cardview.widget.CardView>
+
+    <RelativeLayout
+        android:layout_toRightOf="@id/cover"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        >
+        <RelativeLayout
+            android:layout_centerVertical="true"
+            android:paddingRight="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvName"
+                android:text="Tên bạn"
+                android:layout_alignParentLeft="true"
+                android:theme="@style/Placeholder"
+                android:layout_width="150dp"
+                android:layout_height="15dp"/>
+            <TextView
+                android:id="@+id/tvTime"
+                android:text="20 giờ"
+                android:layout_alignParentRight="true"
+                style="@style/Placeholder"
+                android:layout_width="50dp"
+                android:layout_height="15dp"/>
+            <TextView
+                android:id="@+id/tvMessage"
+                style="@style/Placeholder"
+                android:layout_marginTop="8dp"
+                android:layout_below="@id/tvName"
+                android:layout_centerVertical="true"
+                android:layout_width="250dp"
+                android:layout_height="15dp"/>
+        </RelativeLayout>
+        <TextView
+            android:layout_alignParentBottom="true"
+            style="@style/Line"/>
+    </RelativeLayout>
+
+</RelativeLayout>
