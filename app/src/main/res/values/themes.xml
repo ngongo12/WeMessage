@@ -11,7 +11,7 @@
         <item name="colorOnSecondary">@color/black1d</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">#00000000</item>
-        <item name="android:windowBackground">@drawable/button_gradient_blue_dark</item>
+        <item name="android:windowBackground">@drawable/bg_gradient_blue_dark</item>
         <item name="android:windowLightStatusBar">true</item>
         <!-- Navigation bar color -->
         <item name="android:navigationBarColor">@null</item>
@@ -191,5 +191,10 @@
     </style>
     <style name="RadioButton">
         <item name="buttonTint">@color/black22</item>
+    </style>
+    
+    <style name="Placeholder">
+        <item name="android:background">@color/siver</item>
+        <item name="android:textColor">@color/siver</item>
     </style>
 </resources>

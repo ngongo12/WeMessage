@@ -8,6 +8,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.d("Loi", "onCreate: mở main");
 
         //Ánh xạ các view
         viewPager = findViewById(R.id.viewPager);
@@ -140,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUserState(String state)
     {
-        Intent intent = new Intent(getApplicationContext(), UpdateUserStateService.class);
+        Intent intent = new Intent(this, UpdateUserStateService.class);
         intent.putExtra("id", currentUserId);
         intent.putExtra("state", state);
         intent.putExtra("time", sdf.format(new Date()));

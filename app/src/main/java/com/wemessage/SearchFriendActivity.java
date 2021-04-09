@@ -72,6 +72,9 @@ public class SearchFriendActivity extends AppCompatActivity {
 
 
         list = new ArrayList<>();
+        //Hiển thị rcv
+        adapter = new SearchFriendAdapter(SearchFriendActivity.this, list);
+        rcv.setAdapter(adapter);
 
         edSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -139,9 +142,7 @@ public class SearchFriendActivity extends AppCompatActivity {
                 {
                     tvNotFound.setText("Tìm thấy " + list.size() +" kết quả tương ứng");
                 }
-                //Hiển thị rcv
-                adapter = new SearchFriendAdapter(SearchFriendActivity.this, list);
-                rcv.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
             }
 
             @Override

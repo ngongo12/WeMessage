@@ -70,12 +70,16 @@ public class SuggestionFragment extends Fragment {
         usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
         requestRef = FirebaseDatabase.getInstance().getReference().child("FriendRequests");
 
+        list = new ArrayList<>();
+        adapter = new SuggestionAdapter(getActivity(), list, SuggestionFragment.this, currentUserId);
+        rcv.setAdapter(adapter);
+
         displayRCV();
     }
 
     public void displayRCV()
     {
-        list = new ArrayList<>();
+
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -92,8 +96,7 @@ public class SuggestionFragment extends Fragment {
                     }
                     //Log.d("Loi", "Suggestion: " + list.size());
                 }
-                adapter = new SuggestionAdapter(getActivity(), list, SuggestionFragment.this, currentUserId);
-                rcv.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
             }
 
             @Override

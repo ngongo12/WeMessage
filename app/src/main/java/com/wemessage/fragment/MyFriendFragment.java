@@ -57,12 +57,16 @@ public class MyFriendFragment extends Fragment {
         currentUser = mAuth.getCurrentUser();
         currentUserId = currentUser.getUid();
         friendRef = FirebaseDatabase.getInstance().getReference().child("Friends");
+
+        list = new ArrayList<>();
+        adapter = new MyFriendAdapter(getActivity(), list);
+        rcv.setAdapter(adapter);
+
         displayRCV();
 
     }
     public void displayRCV()
     {
-        list = new ArrayList<>();
         friendRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -76,8 +80,7 @@ public class MyFriendFragment extends Fragment {
                     }
                     Log.d("Loi", "MyFriend: " + list.size());
                 }
-                adapter = new MyFriendAdapter(getActivity(), list);
-                rcv.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
             }
 
             @Override
