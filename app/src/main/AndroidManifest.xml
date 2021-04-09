@@ -40,7 +40,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" /> <!-- CropImage Activity -->
+        <activity android:name=".MainActivity"
+            android:configChanges="screenLayout|colorMode"
+            />
+        <!-- CropImage Activity -->
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />

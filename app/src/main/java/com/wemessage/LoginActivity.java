@@ -43,6 +43,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        Log.d("Loi", "onCreate: mở login");
+
         btnSignUp = findViewById(R.id.btnSignUp);
         btnLogin = findViewById(R.id.btnLogin);
         tilEmail = findViewById(R.id.tilEmail);

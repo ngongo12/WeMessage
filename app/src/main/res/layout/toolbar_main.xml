@@ -17,9 +17,10 @@
         <ImageView
             android:id="@+id/ivSearch"
             android:src="@drawable/ic_search"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_margin="8dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             />

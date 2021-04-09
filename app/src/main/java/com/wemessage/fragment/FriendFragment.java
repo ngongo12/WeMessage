@@ -15,6 +15,7 @@ import com.wemessage.R;
 public class FriendFragment extends Fragment {
 
     SuggestionFragment suggestionFragment;
+    ReceiveFriendRequestFragment requestFragment;
     FragmentManager fm;
 
     @Nullable
@@ -29,7 +30,9 @@ public class FriendFragment extends Fragment {
 
         fm = getFragmentManager();
         suggestionFragment = new SuggestionFragment();
+        requestFragment = new ReceiveFriendRequestFragment();
 
         fm.beginTransaction().add(R.id.frmSuggestion, suggestionFragment).commit();
+        fm.beginTransaction().add(R.id.frmReceivedRequest, requestFragment).commit();
     }
 }

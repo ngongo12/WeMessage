@@ -18,6 +18,7 @@
             android:id="@+id/edSearch"
             style="@style/EditSearch"
             android:hint="Tìm bạn bè ...."
+            android:textColorHint="@color/siver"
             android:background="@null"
             android:layout_centerVertical="true"
             android:padding="8dp"

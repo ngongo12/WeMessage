@@ -15,12 +15,12 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:foreground="@drawable/rounded_image"
+        style="@style/Placeholder"
         >
         <ImageView
             android:id="@+id/ivAvatar"
-            android:src="@drawable/default_avatar"
             android:scaleType="fitCenter"
+            android:theme="@style/Placeholder"
             style="@style/AvatarImage"/>
     </androidx.cardview.widget.CardView>
 
@@ -37,26 +37,25 @@
             <TextView
                 android:id="@+id/tvName"
                 android:text="Tên bạn"
-                android:layout_toLeftOf="@id/tvTime"
                 android:layout_alignParentLeft="true"
-                style="@style/TextViewName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:theme="@style/Placeholder"
+                android:layout_width="150dp"
+                android:layout_height="15dp"/>
             <TextView
                 android:id="@+id/tvTime"
                 android:text="20 giờ"
                 android:layout_alignParentRight="true"
-                style="@style/TextViewMessage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                style="@style/Placeholder"
+                android:layout_width="50dp"
+                android:layout_height="15dp"/>
             <TextView
                 android:id="@+id/tvMessage"
-                android:text="Nội dung"
-                style="@style/TextViewMessage"
+                style="@style/Placeholder"
+                android:layout_marginTop="8dp"
                 android:layout_below="@id/tvName"
                 android:layout_centerVertical="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_width="250dp"
+                android:layout_height="15dp"/>
         </RelativeLayout>
         <TextView
             android:layout_alignParentBottom="true"

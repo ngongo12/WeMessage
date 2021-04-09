@@ -51,6 +51,7 @@ import com.wemessage.model.Message;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,6 +69,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeLayout;
     int numLimit = 8;
 
+
     //Các view của dialog send Image
     Button btnSendImg;
     ImageView ivChoosenImg;
@@ -83,6 +85,8 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     String currentUserId;
     StorageReference imgRef;
+
+    ArrayList<Message> list;
 
     ReadFriendMessageAdapter adapter;
 
@@ -110,6 +114,10 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         rcv.setLayoutManager(layoutManager);
         rcv.setHasFixedSize(true);
 
+        list = new ArrayList<>();
+
+
+
         layoutManager.setStackFromEnd(true);
         //layoutManager.setReverseLayout(true);
 
@@ -133,6 +141,11 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         tvFriendStatus = toolbar.findViewById(R.id.tvFriendStatus);
 
         getMyFriendInfo();
+        //Xử lý adapter
+        adapter = new ReadFriendMessageAdapter(list, currentUserId, myFriendId, friendInfo, this);
+        Log.d("Loi", "onCreate: " + myFriendId + " " + currentUserId);
+        //adapter.startListening();
+        rcv.setAdapter(adapter);
         
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,9 +177,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 numLimit += 5;
-                adapter.updateOptions(new FirebaseRecyclerOptions.Builder<Message>()
-                        .setQuery(messageRef.child(currentUserId).child(myFriendId).child("messages").limitToLast(numLimit), Message.class)
-                        .build());
+                readMessages();
                 swipeLayout.setRefreshing(false);
             }
         });
@@ -217,13 +228,25 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     }
 
     private void readMessages() {
+        list.clear();
         //Thực hiện query
-        FirebaseRecyclerOptions<Message> options = new FirebaseRecyclerOptions.Builder<Message>()
-                .setQuery(messageRef.child(currentUserId).child(myFriendId).child("messages").limitToLast(numLimit), Message.class)
-                .build();
-        adapter = new ReadFriendMessageAdapter(options, currentUserId, friendInfo, getApplicationContext());
-        adapter.startListening();
-        rcv.setAdapter(adapter);
+        messageRef.child(currentUserId).child(myFriendId).child("messages").limitToLast(numLimit).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren())
+                {
+                    Message item = dataSnapshot.getValue(Message.class);
+                    list.add(item);
+                }
+                //Toast.makeText(ChatWithFriendActivity.this, ""+ list.size(), Toast.LENGTH_SHORT).show();
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         //Cập nhật thời gian đọc tin mới nhất
         messageRef.child(currentUserId).child(myFriendId).child("last_seen").setValue(sdf.format(new Date()));
@@ -400,7 +423,6 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        adapter.startListening();
         try {
             rcv.smoothScrollToPosition(rcv.getAdapter().getItemCount()+1);
         }
@@ -413,8 +435,17 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        adapter.startListening();
         //Cập nhật thời gian đọc tin mới nhất
         messageRef.child(currentUserId).child(myFriendId).child("last_seen").setValue(sdf.format(new Date()));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 }

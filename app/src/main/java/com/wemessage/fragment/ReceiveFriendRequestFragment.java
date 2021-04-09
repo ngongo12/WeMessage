@@ -1,5 +1,6 @@
 package com.wemessage.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,67 +21,57 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wemessage.R;
-import com.wemessage.adapter.MyFriendAdapter;
+import com.wemessage.adapter.ReceiveFriendRequestAdapter;
 
 import java.util.ArrayList;
 
-public class MyFriendFragment extends Fragment {
+public class ReceiveFriendRequestFragment extends Fragment {
     RecyclerView rcv;
-    ArrayList<String> list;
-
-    MyFriendAdapter adapter;
-
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
     String currentUserId;
-    DatabaseReference friendRef;
+    DatabaseReference usersRef, requestRef;
+    ReceiveFriendRequestAdapter adapter;
+    ArrayList<String>list;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_myfriend, container, false);
+        return inflater.inflate(R.layout.fragment_reveived_friend_request, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        //Ánh xạ các view
         rcv = getView().findViewById(R.id.rcv);
-
-        //Set layout cho rcv
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         rcv.setLayoutManager(layoutManager);
 
-        //Khởi tạo các biến dành cho firebase
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         currentUserId = currentUser.getUid();
-        friendRef = FirebaseDatabase.getInstance().getReference().child("Friends");
+        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        requestRef = FirebaseDatabase.getInstance().getReference().child("FriendRequests");
+        list= new ArrayList<>();
 
-        list = new ArrayList<>();
-        adapter = new MyFriendAdapter(getActivity(), list);
-        rcv.setAdapter(adapter);
-
-        displayRCV();
+        displayRcv();
 
     }
-    public void displayRCV()
-    {
-        friendRef.addValueEventListener(new ValueEventListener() {
+
+    public void displayRcv(){
+        requestRef.child(currentUserId).orderByChild("type").equalTo("receive").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();
-                for (DataSnapshot data : snapshot.getChildren())
-                {
-                    if(!data.getKey().equals(currentUserId))
-                    {
-                        String friendId = data.getKey().toString();
-                        list.add(friendId);
-                    }
-                    Log.d("Loi", "MyFriend: " + list.size());
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    list.add(dataSnapshot.getKey());
+
                 }
-                adapter.notifyDataSetChanged();
+                Log.d("Loi", "onDataChange: size " + list.size());
+                adapter=new ReceiveFriendRequestAdapter(list, getActivity(),ReceiveFriendRequestFragment.this,currentUserId);
+                rcv.setAdapter(adapter);
+
             }
 
             @Override

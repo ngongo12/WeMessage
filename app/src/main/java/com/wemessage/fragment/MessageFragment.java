@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 public class MessageFragment extends Fragment {
 
     RecyclerView rcv;
+    ShimmerFrameLayout shimmer;
 
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
@@ -52,6 +54,7 @@ public class MessageFragment extends Fragment {
 
         //Ánh xạ các view
         rcv = getView().findViewById(R.id.rcv);
+        shimmer = getView().findViewById(R.id.shimmer);
 
         //Set layout cho rcv
         rcv.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -62,6 +65,9 @@ public class MessageFragment extends Fragment {
         currentUser = mAuth.getCurrentUser();
         currentUserId = currentUser.getUid();
         messRef = FirebaseDatabase.getInstance().getReference().child("Messages");
+
+        adapter = new FriendMessageAdapter(list,MessageFragment.this, currentUserId, getContext());
+        rcv.setAdapter(adapter);
 
 
         //Thực hiện query
@@ -74,8 +80,12 @@ public class MessageFragment extends Fragment {
                     list.add(data.getKey());
                 }
 
-                adapter = new FriendMessageAdapter(list,MessageFragment.this, currentUserId, getContext());
-                rcv.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
+                //Dừng và ẩn shimmer
+                shimmer.stopShimmer();
+                shimmer.setVisibility(View.GONE);
+
             }
 
             @Override
@@ -90,6 +100,18 @@ public class MessageFragment extends Fragment {
         Intent intent = new Intent(getActivity(), ChatWithFriendActivity.class);
         intent.putExtra("myFriendId", id);
         startActivity(intent);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        shimmer.startShimmer();
+    }
+
+    @Override
+    public void onPause() {
+        shimmer.stopShimmer();
+        super.onPause();
     }
 
     @Override
