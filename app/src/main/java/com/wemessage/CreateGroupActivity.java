@@ -107,7 +107,20 @@ public class CreateGroupActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                if (!tvGroupName.getText().toString().trim().equals("Chưa đặt tên") || mapChoosen.size() >= 2) {
+                    openDialog();
+                }
+                else
+                {
+                    CreateGroupActivity.super.onBackPressed();
+                }
+            }
+        });
+
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layout_name.setVisibility(View.VISIBLE);
             }
         });
 
@@ -143,7 +156,7 @@ public class CreateGroupActivity extends AppCompatActivity {
             public void onClick(View v) {
                 tvGroupName.setText(edGroupName.getText().toString().trim());
                 showButtonCreate();
-
+                layout_name.setVisibility(View.GONE);
             }
         });
 
@@ -296,27 +309,4 @@ public class CreateGroupActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId())
-        {
-            //Xử lý nút back trên thanh actionbar
-            case R.id.home:
-            {
-                openDialog();
-                Log.d("Loi", "onOptionsItemSelected: ");
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        //return super.onCreateOptionsMenu(menu);
-        return true;
-    }
 }
