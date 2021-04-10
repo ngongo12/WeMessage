@@ -14,6 +14,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -102,6 +104,26 @@ public class CreateGroupActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
 
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!tvGroupName.getText().toString().trim().equals("Chưa đặt tên") || mapChoosen.size() >= 2) {
+                    openDialog();
+                }
+                else
+                {
+                    CreateGroupActivity.super.onBackPressed();
+                }
+            }
+        });
+
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layout_name.setVisibility(View.VISIBLE);
+            }
+        });
+
         edGroupName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -134,7 +156,7 @@ public class CreateGroupActivity extends AppCompatActivity {
             public void onClick(View v) {
                 tvGroupName.setText(edGroupName.getText().toString().trim());
                 showButtonCreate();
-
+                layout_name.setVisibility(View.GONE);
             }
         });
 
@@ -249,11 +271,16 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        openDialog();
+        if (!tvGroupName.getText().toString().trim().equals("Chưa đặt tên") || mapChoosen.size() >= 2) {
+            openDialog();
+        }
+        else
+        {
+            CreateGroupActivity.super.onBackPressed();
+        }
     }
     public void openDialog()
     {
-
         //Su dung Alert
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Bạn muốn hủy tạo nhóm: " + tvGroupName.getText().toString() + "?");

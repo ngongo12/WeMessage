@@ -23,11 +23,11 @@
             android:layout_height="wrap_content"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <RelativeLayout
-            android:id="@+id/layout_chat"
-            android:layout_alignParentBottom="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <include layout="@layout/chat_input_layout"/>
+        android:id="@+id/layout_chat"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <include layout="@layout/chat_input_layout"/>
     </RelativeLayout>
 
 </RelativeLayout>
