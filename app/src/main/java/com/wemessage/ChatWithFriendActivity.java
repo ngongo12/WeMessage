@@ -146,7 +146,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         Log.d("Loi", "onCreate: " + myFriendId + " " + currentUserId);
         //adapter.startListening();
         rcv.setAdapter(adapter);
-        
+
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
