@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/layout"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
@@ -24,7 +25,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="88dp"
+        android:layout_height="86dp"
         android:layout_toRightOf="@id/cover">
 
         <RelativeLayout
@@ -48,31 +49,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tvName"
-                android:layout_centerVertical="true"
-                android:text="Nội dung tin nhắn dfjk fjdfj jfjdj jfdjf jfdjdf jfdjf jfd" />
+                android:text="Nội dung" />
         </RelativeLayout>
 
-        <Button
-            android:id="@+id/btnRequest"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
-            android:layout_toLeftOf="@id/ivCancel"
-            android:layout_centerVertical="true"
-            android:layout_margin="8dp"
-            android:background="@drawable/button_gradient_blue"
-            android:text="Chấp nhận"
-            android:textColor="@color/white"
-            android:textSize="13sp" />
-
-        <ImageView
-            android:id="@+id/ivCancel"
-            android:src="@drawable/ic_cancel"
+        <CheckBox
+            android:id="@+id/chk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="24dp"
-            android:layout_marginLeft="8dp"
-            android:layout_width="20dp"
-            android:layout_height="20dp"/>
+            android:layout_marginRight="32dp"
+            style="@style/RadioButton"
+            android:textSize="13sp" />
 
         <TextView
             style="@style/Line"

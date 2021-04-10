@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wemessage.ChatWithFriendActivity;
+import com.wemessage.CreateGroupActivity;
 import com.wemessage.R;
 import com.wemessage.adapter.FriendMessageAdapter;
 import com.wemessage.model.FriendInfo;
@@ -31,6 +34,7 @@ import java.util.ArrayList;
 public class MessageFragment extends Fragment {
 
     RecyclerView rcv;
+    LinearLayout layout_create_group;
     ShimmerFrameLayout shimmer;
 
     FirebaseAuth mAuth;
@@ -54,6 +58,7 @@ public class MessageFragment extends Fragment {
 
         //Ánh xạ các view
         rcv = getView().findViewById(R.id.rcv);
+        layout_create_group = getView().findViewById(R.id.layout_create_group);
         shimmer = getView().findViewById(R.id.shimmer);
 
         //Set layout cho rcv
@@ -91,6 +96,14 @@ public class MessageFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });
+
+        layout_create_group.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CreateGroupActivity.class);
+                startActivity(intent);
             }
         });
     }
