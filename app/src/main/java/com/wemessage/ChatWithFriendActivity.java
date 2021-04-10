@@ -228,11 +228,11 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     }
 
     private void readMessages() {
-        list.clear();
         //Thực hiện query
         messageRef.child(currentUserId).child(myFriendId).child("messages").limitToLast(numLimit).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                list.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren())
                 {
                     Message item = dataSnapshot.getValue(Message.class);

@@ -71,14 +71,15 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
         myRequestRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.hasChild(list.get(position).getUid()))
-                {
-                    //Nếu có trong danh sách yêu cầu kết bạn thì ẩn đi
-                    holder.layout.setVisibility(View.GONE
-                    );
-                    RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
-                    params.height = 0;
-                    holder.layout.setLayoutParams(params);
+                if (list.get(position).getUid() != null) {
+                    if (snapshot.hasChild(list.get(position).getUid())) {
+                        //Nếu có trong danh sách yêu cầu kết bạn thì ẩn đi
+                        holder.layout.setVisibility(View.GONE
+                        );
+                        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
+                        params.height = 0;
+                        holder.layout.setLayoutParams(params);
+                    }
                 }
             }
 
