@@ -59,7 +59,8 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
         holder.tvName.setText(list.get(position).getName());
-        holder.tvInfo.setText(list.get(position).getStatus());
+        if(list.get(position).getStatus() != null)
+            holder.tvInfo.setText(list.get(position).getStatus());
 
         //Nếu có avatar thì hiển thị không thì mặc định
         if (list.get(position).getAvatar() != null)
