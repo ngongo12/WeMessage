@@ -117,7 +117,7 @@ public class SearchFriendActivity extends AppCompatActivity {
 
     private void search(String s) {
         //userRef.orderByChild("name").startAt(s).endAt(s+"\uf8ff") không đúng lắm
-        userRef.orderByChild("name").addListenerForSingleValueEvent(new ValueEventListener() {
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();

@@ -37,7 +37,7 @@ public class OtherFragment extends Fragment {
     TextView tvName;
     ImageView ivAvatar, ivWallpaper;
     SwitchCompat scDark;
-    LinearLayout layoutEdit, layoutLogout, layoutRePass;
+    LinearLayout layoutEdit, layoutLogout, layoutRePass, layoutBright;
 
     DatabaseReference userRef;
     FirebaseUser currentUser;
@@ -60,6 +60,7 @@ public class OtherFragment extends Fragment {
         layoutEdit = getView().findViewById(R.id.layoutEdit);
         layoutLogout = getView().findViewById(R.id.layoutLogout);
         layoutRePass = getView().findViewById(R.id.layoutRePass);
+        layoutBright = getView().findViewById(R.id.layoutBright);
         ivAvatar = getView().findViewById(R.id.ivAvatar);
         ivWallpaper = getView().findViewById(R.id.ivWallpaper);
         scDark = getView().findViewById(R.id.scDark);
@@ -98,6 +99,13 @@ public class OtherFragment extends Fragment {
                 {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 }
+            }
+        });
+
+        layoutBright.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scDark.setChecked(!scDark.isChecked());
             }
         });
     }

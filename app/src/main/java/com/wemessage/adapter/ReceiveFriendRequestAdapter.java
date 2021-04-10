@@ -39,7 +39,7 @@ public class ReceiveFriendRequestAdapter extends RecyclerView.Adapter<ReceiveFri
         this.list=list;
         this.context = context;
         this.requestFragment = requestFragment;
-        currentUserId = currentUserId;
+        this.currentUserId = currentUserId;
         myRequestRef = FirebaseDatabase.getInstance().getReference().child("FriendRequests").child(currentUserId);
         userRef = FirebaseDatabase.getInstance().getReference().child("Users");
     }

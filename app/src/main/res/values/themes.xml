@@ -17,6 +17,8 @@
         <item name="android:navigationBarColor">@null</item>
         <item name="android:windowLightNavigationBar">true</item>
         <!-- Customize your theme here. -->
+        <item name="android:screenOrientation">portrait</item>
+        <item name="android:configChanges">orientation</item>
         <item name="android:textColor">@color/black22</item>
     </style>
 
@@ -197,4 +199,9 @@
         <item name="android:background">@color/siver</item>
         <item name="android:textColor">@color/siver</item>
     </style>
+
+    <style name="SearchContent">
+        <item name="android:background">@drawable/bg_radius_grey</item>
+    </style>
+
 </resources>
