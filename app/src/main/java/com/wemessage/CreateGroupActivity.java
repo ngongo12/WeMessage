@@ -14,6 +14,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -101,6 +103,13 @@ public class CreateGroupActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         edGroupName.addTextChangedListener(new TextWatcher() {
             @Override
@@ -249,11 +258,16 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        openDialog();
+        if (!tvGroupName.getText().toString().trim().equals("Chưa đặt tên") || mapChoosen.size() >= 2) {
+            openDialog();
+        }
+        else
+        {
+            CreateGroupActivity.super.onBackPressed();
+        }
     }
     public void openDialog()
     {
-
         //Su dung Alert
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Bạn muốn hủy tạo nhóm: " + tvGroupName.getText().toString() + "?");
@@ -282,4 +296,27 @@ public class CreateGroupActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId())
+        {
+            //Xử lý nút back trên thanh actionbar
+            case R.id.home:
+            {
+                openDialog();
+                Log.d("Loi", "onOptionsItemSelected: ");
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //return super.onCreateOptionsMenu(menu);
+        return true;
+    }
 }
