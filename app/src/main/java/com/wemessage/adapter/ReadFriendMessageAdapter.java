@@ -70,6 +70,10 @@ public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMes
             //Là tin nhắn của mình thì ẩn avatar
             holder.cover.setVisibility(View.GONE);
         }
+        else
+        {
+            holder.cover.setVisibility(View.VISIBLE);
+        }
 
         if(list.get(position).getType().equals("text"))
         {
@@ -87,7 +91,7 @@ public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMes
                 holder.tvSend.setVisibility(View.INVISIBLE);
             }
         }
-        if(list.get(position).getType().equals("image"))
+        else if(list.get(position).getType().equals("image"))
         {
             //Hiện layout image
             //holder.layout_img.setLayoutParams(holder.paramsHien);
@@ -103,6 +107,16 @@ public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMes
                 holder.ivSend.setVisibility(View.GONE);
             }
         }
+
+        //Test
+        holder.layout_all.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Loi", "pos: " + position);
+                Log.d("Loi", "mes: " + list.get(position).getMessage());
+                Log.d("Loi", "type: " + list.get(position).getType());
+            }
+        });
     }
 
     @Override
@@ -168,12 +182,10 @@ public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMes
                     if (hasFocus)
                     {
                         tvTime.setVisibility(View.VISIBLE);
-                        Log.d("Loi", "focus: true");
                     }
                     else
                     {
                         tvTime.setVisibility(View.GONE);
-                        Log.d("Loi", "focus: false");
                     }
                 }
             });
