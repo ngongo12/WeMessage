@@ -24,6 +24,9 @@
         <service
             android:name=".service.UpdateUserStateService"
             android:enabled="true" />
+        <service
+            android:name=".service.ReceiveMessageService"
+            android:enabled="true" />
 
         <activity
             android:name=".SettingActivity"
