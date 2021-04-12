@@ -2,9 +2,7 @@ package com.wemessage.adapter;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,8 +15,6 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,26 +22,23 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wemessage.R;
 import com.wemessage.model.FriendInfo;
-import com.wemessage.model.Message;
+import com.wemessage.model.Messages;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMessageAdapter.MessageHolder> {
 
     String currentUserId, friendId;
     FriendInfo friendInfo;
     Context context;
-    ArrayList<Message> list;
+    ArrayList<Messages> list;
 
     DatabaseReference userRef;
 
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 
-    public ReadFriendMessageAdapter(ArrayList<Message> list,String currentUserId, String friendId, FriendInfo friendInfo, Context context) {
+    public ReadFriendMessageAdapter(ArrayList<Messages> list, String currentUserId, String friendId, FriendInfo friendInfo, Context context) {
         this.currentUserId = currentUserId;
         this.friendInfo = friendInfo;
         this.context = context;
@@ -96,7 +89,6 @@ public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMes
         else if(list.get(position).getType().equals("image"))
         {
             //Hiện layout image
-            //holder.layout_img.setLayoutParams(holder.paramsHien);
             holder.layout_img.setVisibility(View.VISIBLE);
             holder.layout_text.setVisibility(View.GONE);
             if(list.get(position).getFrom().equals(currentUserId))

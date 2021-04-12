@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -43,11 +40,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 import com.wemessage.adapter.ReadFriendMessageAdapter;
 import com.wemessage.model.FriendInfo;
-import com.wemessage.model.Message;
+import com.wemessage.model.Messages;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -55,8 +50,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import static android.view.animation.Animation.START_ON_FIRST_FRAME;
 
 public class ChatWithFriendActivity extends AppCompatActivity {
 
@@ -86,7 +79,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     String currentUserId;
     StorageReference imgRef;
 
-    ArrayList<Message> list;
+    ArrayList<Messages> list;
 
     ReadFriendMessageAdapter adapter;
 
@@ -237,7 +230,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                 list.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren())
                 {
-                    Message item = dataSnapshot.getValue(Message.class);
+                    Messages item = dataSnapshot.getValue(Messages.class);
                     list.add(item);
                 }
                 //Xử lý adapter
@@ -418,6 +411,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                 {
                     Toast.makeText(ChatWithFriendActivity.this, "Đã gửi", Toast.LENGTH_SHORT).show();
 
+                    //Gửi lên cloud messages
                 }
                 else
                 {

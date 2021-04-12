@@ -40,10 +40,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.wemessage.adapter.ReadFriendMessageAdapter;
 import com.wemessage.adapter.ReadGroupMessageAdapter;
 import com.wemessage.model.FriendInfo;
-import com.wemessage.model.Message;
+import com.wemessage.model.Messages;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -81,7 +80,7 @@ public class ChatWithGroupActivity extends AppCompatActivity {
     String currentUserId;
     StorageReference imgRef;
 
-    ArrayList<Message> list;
+    ArrayList<Messages> list;
 
     ReadGroupMessageAdapter adapter;
 
@@ -253,7 +252,7 @@ public class ChatWithGroupActivity extends AppCompatActivity {
                 list.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren())
                 {
-                    Message item = dataSnapshot.getValue(Message.class);
+                    Messages item = dataSnapshot.getValue(Messages.class);
                     list.add(item);
                 }
                 //Toast.makeText(ChatWithFriendActivity.this, ""+ list.size(), Toast.LENGTH_SHORT).show();

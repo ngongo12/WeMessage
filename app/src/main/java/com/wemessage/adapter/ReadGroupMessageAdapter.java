@@ -21,8 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wemessage.R;
-import com.wemessage.model.FriendInfo;
-import com.wemessage.model.Message;
+import com.wemessage.model.Messages;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,13 +30,13 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
 
     String currentUserId, groupId;
     Context context;
-    ArrayList<Message> list;
+    ArrayList<Messages> list;
 
     DatabaseReference userRef;
 
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 
-    public ReadGroupMessageAdapter(ArrayList<Message> list, String currentUserId, String groupId, Context context) {
+    public ReadGroupMessageAdapter(ArrayList<Messages> list, String currentUserId, String groupId, Context context) {
         this.currentUserId = currentUserId;
         this.context = context;
         this.groupId = groupId;
@@ -84,34 +83,36 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
         if(list.get(position).getType().equals("text"))
         {
             //Hiện layout text
-            //holder.layout_text.setLayoutParams(holder.paramsHien);
             holder.layout_text.setVisibility(View.VISIBLE);
             holder.layout_img.setVisibility(View.GONE);
             if(list.get(position).getFrom().equals(currentUserId))
             {
                 holder.tvSend.setText(list.get(position).getMessage());
-                holder.tvReceive.setVisibility(View.INVISIBLE);
+                holder.tvSend.setVisibility(View.VISIBLE);
+                holder.tvReceive.setVisibility(View.GONE);
             }
             else
             {
                 holder.tvReceive.setText(list.get(position).getMessage());
-                holder.tvSend.setVisibility(View.INVISIBLE);
+                holder.tvReceive.setVisibility(View.VISIBLE);
+                holder.tvSend.setVisibility(View.GONE);
             }
         }
         else if(list.get(position).getType().equals("image"))
         {
             //Hiện layout image
-            //holder.layout_img.setLayoutParams(holder.paramsHien);
             holder.layout_img.setVisibility(View.VISIBLE);
             holder.layout_text.setVisibility(View.GONE);
             if(list.get(position).getFrom().equals(currentUserId))
             {
                 Glide.with(context).load(list.get(position).getMessage()).into(holder.ivSend);
+                holder.ivSend.setVisibility(View.VISIBLE);
                 holder.ivReceive.setVisibility(View.GONE);
             }
             else
             {
                 Glide.with(context).load(list.get(position).getMessage()).into(holder.ivReceive);
+                holder.ivReceive.setVisibility(View.VISIBLE);
                 holder.ivSend.setVisibility(View.GONE);
             }
         }

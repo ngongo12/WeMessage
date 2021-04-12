@@ -2,6 +2,7 @@ package com.wemessage.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -19,15 +20,13 @@ import com.google.firebase.database.ValueEventListener;
 public class ReceiveMessageService extends Service {
 
     String currentUserId;
-    String state;
-    String time;
-    DatabaseReference messRef, groupMessRef;
+    DatabaseReference myRef;
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+    Handler handler = new Handler();
+    Runnable chay;
+    boolean isRunning = true;
+    int tang = 0;
+
 
     @Override
     public void onCreate() {
@@ -38,22 +37,10 @@ public class ReceiveMessageService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         currentUserId = intent.getStringExtra("id");
-        Toast.makeText(this, "Mở service", Toast.LENGTH_SHORT).show();
 
-        messRef = FirebaseDatabase.getInstance().getReference().child("Messages").child(currentUserId);
-        groupMessRef = FirebaseDatabase.getInstance().getReference().child("Groups");
+        //myRef = FirebaseDatabase.getInstance().getReference().child("Notification").child(currentUserId);
 
-        messRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Toast.makeText(ReceiveMessageService.this, currentUserId, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        waitingMessage();
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -61,6 +48,29 @@ public class ReceiveMessageService extends Service {
     @Override
     public void onDestroy() {
         Toast.makeText(this, "Đóng service", Toast.LENGTH_SHORT).show();
+        handler.removeCallbacks(chay);
         super.onDestroy();
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    public void waitingMessage()
+    {
+        if(isRunning)
+        {
+            chay = new Runnable() {
+                @Override
+                public void run() {
+                    tang++;
+                    Toast.makeText(ReceiveMessageService.this, "Tăng lên: "+tang, Toast.LENGTH_SHORT).show();
+                    waitingMessage();
+                };
+            };
+            handler.postDelayed(chay,5000);
+        }
     }
 }
