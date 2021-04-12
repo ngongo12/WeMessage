@@ -124,12 +124,12 @@ public class GroupSuggestionAdapter extends RecyclerView.Adapter<GroupSuggestion
 
 
 
-        /*holder.layout.setOnClickListener(new View.OnClickListener() {
+        holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fragment.gotoChatActivity(list.get(position));
             }
-        });*/
+        });
     }
 
     @Override

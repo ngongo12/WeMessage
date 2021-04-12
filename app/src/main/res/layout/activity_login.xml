@@ -35,6 +35,7 @@
         <ImageView
             android:id="@+id/ivEmail"
             android:src="@drawable/ic_email"
+            android:tint="@color/grey66"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_marginBottom="16dp"
@@ -73,6 +74,7 @@
         <ImageView
             android:id="@+id/ivPass"
             android:src="@drawable/ic_password"
+            android:tint="@color/grey66"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_marginBottom="16dp"
@@ -87,6 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/ivPass"
             android:layout_alignParentRight="true"
+            app:passwordToggleTint="@color/greyc0"
             app:passwordToggleEnabled="true"
             style="@style/LoginEditText"
             >

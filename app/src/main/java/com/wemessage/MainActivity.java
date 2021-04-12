@@ -178,9 +178,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         //Mở service chờ tin nhắn đến
-        Intent intentService = new Intent(this, ReceiveMessageService.class);
-        intentService.putExtra("id", currentUserId);
-        startService(intentService);
+        //Intent intentService = new Intent(this, ReceiveMessageService.class);
+        //intentService.putExtra("id", currentUserId);
+        //startService(intentService);
         //Cập nhật trạng thái người dùng khi offline
         updateUserState("offline");
         super.onDestroy();

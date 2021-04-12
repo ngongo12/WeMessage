@@ -2,9 +2,7 @@ package com.wemessage.adapter;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,8 +15,6 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,16 +24,12 @@ import com.wemessage.R;
 import com.wemessage.model.FriendInfo;
 import com.wemessage.model.Message;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
-public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMessageAdapter.MessageHolder> {
+public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessageAdapter.MessageHolder> {
 
-    String currentUserId, friendId;
-    FriendInfo friendInfo;
+    String currentUserId, groupId;
     Context context;
     ArrayList<Message> list;
 
@@ -45,11 +37,10 @@ public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMes
 
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 
-    public ReadFriendMessageAdapter(ArrayList<Message> list,String currentUserId, String friendId, FriendInfo friendInfo, Context context) {
+    public ReadGroupMessageAdapter(ArrayList<Message> list, String currentUserId, String groupId, Context context) {
         this.currentUserId = currentUserId;
-        this.friendInfo = friendInfo;
         this.context = context;
-        this.friendId = friendId;
+        this.groupId = groupId;
         this.list = list;
         userRef = FirebaseDatabase.getInstance().getReference().child("Users");
     }
@@ -58,7 +49,7 @@ public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMes
     @Override
     public MessageHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_box, parent, false);
-        return new ReadFriendMessageAdapter.MessageHolder(view);
+        return new ReadGroupMessageAdapter.MessageHolder(view);
     }
 
     @Override
@@ -73,6 +64,21 @@ public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMes
         else
         {
             holder.cover.setVisibility(View.VISIBLE);
+            //Lấy avatar
+            userRef.child(list.get(position).getFrom()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists() && snapshot.hasChild("avatar"))
+                    {
+                        Glide.with(context).load(snapshot.child("avatar").getValue().toString()).into(holder.ivAvater);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
 
         if(list.get(position).getType().equals("text"))
@@ -156,7 +162,7 @@ public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMes
 
             tvTime.setVisibility(View.GONE);
 
-            userRef.child(friendId).addListenerForSingleValueEvent(new ValueEventListener() {
+            /*userRef.child(friendId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists() && snapshot.hasChild("avatar"))
@@ -169,7 +175,7 @@ public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMes
                 public void onCancelled(@NonNull DatabaseError error) {
 
                 }
-            });
+            });*/
 
             layout_all.setOnClickListener(new View.OnClickListener() {
                 @Override

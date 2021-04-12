@@ -2,12 +2,14 @@ package com.wemessage.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -195,11 +197,12 @@ public class MyGroupAdapter extends RecyclerView.Adapter<MyGroupAdapter.Holder> 
                     }
 
                     Date finalTimeSend = timeSend;
-                    messRef.child(currentUserId).child(id).addValueEventListener(new ValueEventListener() {
+                    groupRef.child(id).child("members").child(currentUserId).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if(snapshot.hasChild("last_seen"))
                             {
+                                Log.d("Loi", "last_seen: ");
                                 Date lastSeen;
                                 try {
                                     lastSeen = sdf.parse(snapshot.child("last_seen").getValue().toString());
@@ -236,12 +239,12 @@ public class MyGroupAdapter extends RecyclerView.Adapter<MyGroupAdapter.Holder> 
             }
         });
 
-        /*holder.layout.setOnClickListener(new View.OnClickListener() {
+        holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fragment.gotoChatActivity(list.get(position));
             }
-        });*/
+        });
     }
 
     @Override

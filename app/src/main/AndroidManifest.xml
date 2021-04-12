@@ -13,13 +13,14 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-
         android:theme="@style/Theme.WeMessage">
         <activity
+            android:name=".ChatWithGroupActivity"
             android:screenOrientation="portrait"
-            android:name=".CreateGroupActivity"
-            android:parentActivityName=".MainActivity"
             ></activity>
+        <activity
+            android:name=".CreateGroupActivity"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".service.UpdateUserStateService"
@@ -30,16 +31,13 @@
 
         <activity
             android:name=".SettingActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ChatWithFriendActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SearchFriendActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SignupActivity"
             android:screenOrientation="portrait"
@@ -60,8 +58,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            android:configChanges="screenLayout|colorMode" /> <!-- CropImage Activity -->
+            android:configChanges="screenLayout|colorMode"
+            android:screenOrientation="portrait" /> <!-- CropImage Activity -->
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />

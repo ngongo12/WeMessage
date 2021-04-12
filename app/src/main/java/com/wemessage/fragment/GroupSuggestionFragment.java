@@ -1,5 +1,6 @@
 package com.wemessage.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wemessage.ChatWithGroupActivity;
 import com.wemessage.R;
 import com.wemessage.adapter.GroupSuggestionAdapter;
 import com.wemessage.adapter.MyGroupAdapter;
@@ -92,5 +94,12 @@ public class GroupSuggestionFragment extends Fragment {
 
             }
         });
+    }
+
+    public void gotoChatActivity(String groupId)
+    {
+        Intent intent = new Intent(getActivity(), ChatWithGroupActivity.class);
+        intent.putExtra("groupId", groupId);
+        startActivity(intent);
     }
 }

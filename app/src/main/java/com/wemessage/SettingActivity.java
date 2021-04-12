@@ -90,6 +90,12 @@ public class SettingActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setTitle("");
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         //Khởi tạo các biến dành cho firebase
         mAuth = FirebaseAuth.getInstance();
