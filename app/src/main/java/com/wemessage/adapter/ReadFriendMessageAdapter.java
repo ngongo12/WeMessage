@@ -78,18 +78,19 @@ public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMes
         if(list.get(position).getType().equals("text"))
         {
             //Hiện layout text
-            //holder.layout_text.setLayoutParams(holder.paramsHien);
             holder.layout_text.setVisibility(View.VISIBLE);
             holder.layout_img.setVisibility(View.GONE);
             if(list.get(position).getFrom().equals(currentUserId))
             {
                 holder.tvSend.setText(list.get(position).getMessage());
-                holder.tvReceive.setVisibility(View.INVISIBLE);
+                holder.tvSend.setVisibility(View.VISIBLE);
+                holder.tvReceive.setVisibility(View.GONE);
             }
             else
             {
                 holder.tvReceive.setText(list.get(position).getMessage());
-                holder.tvSend.setVisibility(View.INVISIBLE);
+                holder.tvReceive.setVisibility(View.VISIBLE);
+                holder.tvSend.setVisibility(View.GONE);
             }
         }
         else if(list.get(position).getType().equals("image"))
@@ -101,11 +102,13 @@ public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMes
             if(list.get(position).getFrom().equals(currentUserId))
             {
                 Glide.with(context).load(list.get(position).getMessage()).into(holder.ivSend);
+                holder.ivSend.setVisibility(View.VISIBLE);
                 holder.ivReceive.setVisibility(View.GONE);
             }
             else
             {
                 Glide.with(context).load(list.get(position).getMessage()).into(holder.ivReceive);
+                holder.ivReceive.setVisibility(View.VISIBLE);
                 holder.ivSend.setVisibility(View.GONE);
             }
         }
