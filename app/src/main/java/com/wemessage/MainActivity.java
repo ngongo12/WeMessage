@@ -8,6 +8,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -24,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wemessage.adapter.MainViewPagerAdapter;
 import com.wemessage.fragment.OtherFragment;
+import com.wemessage.service.ReceiveMessageService;
 import com.wemessage.service.UpdateUserStateService;
 
 import java.text.SimpleDateFormat;
@@ -52,6 +54,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Tắt service chờ tin nhắn đến
+        Intent intentService = new Intent(this, ReceiveMessageService.class);
+        stopService(intentService);
+
+        Log.d("Loi", "onCreate: mở main");
 
         //Ánh xạ các view
         viewPager = findViewById(R.id.viewPager);
@@ -140,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUserState(String state)
     {
-        Intent intent = new Intent(getApplicationContext(), UpdateUserStateService.class);
+        Intent intent = new Intent(this, UpdateUserStateService.class);
         intent.putExtra("id", currentUserId);
         intent.putExtra("state", state);
         intent.putExtra("time", sdf.format(new Date()));
@@ -169,6 +177,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        //Mở service chờ tin nhắn đến
+        Intent intentService = new Intent(this, ReceiveMessageService.class);
+        intentService.putExtra("id", currentUserId);
+        startService(intentService);
         //Cập nhật trạng thái người dùng khi offline
         updateUserState("offline");
         super.onDestroy();

@@ -15,77 +15,36 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.wemessage.R;
 import com.wemessage.model.FriendInfo;
-import com.wemessage.model.Message;
+import com.wemessage.model.Messages;
 
-public class ReadFriendMessageAdapter extends FirebaseRecyclerAdapter<Message, ReadFriendMessageAdapter.MessageHolder> {
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
-    String currentUserId;
+public class ReadFriendMessageAdapter extends RecyclerView.Adapter<ReadFriendMessageAdapter.MessageHolder> {
+
+    String currentUserId, friendId;
     FriendInfo friendInfo;
     Context context;
+    ArrayList<Messages> list;
 
-    /**
-     * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
-     * {@link FirebaseRecyclerOptions} for configuration options.
-     *
-     * @param options
-     */
-    public ReadFriendMessageAdapter(@NonNull FirebaseRecyclerOptions<Message> options, String currentUserId, FriendInfo friendInfo, Context context) {
-        super(options);
+    DatabaseReference userRef;
+
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+
+    public ReadFriendMessageAdapter(ArrayList<Messages> list, String currentUserId, String friendId, FriendInfo friendInfo, Context context) {
         this.currentUserId = currentUserId;
         this.friendInfo = friendInfo;
         this.context = context;
-    }
-
-    @Override
-    protected void onBindViewHolder(@NonNull MessageHolder holder, int position, @NonNull Message model) {
-        holder.tvTime.setText(model.getTime());
-
-        //Nếu là tin nhắn của mình thì ẩn avatar
-        if(model.getFrom().equals(currentUserId))
-        {
-            holder.cover.setVisibility(View.INVISIBLE);
-        }
-
-        if(model.getType().equals("text"))
-        {
-            Log.d("Loi", "onBindViewHolder: " + model.getMessage());
-            //Hiện layout text
-            holder.layout_text.setLayoutParams(holder.paramsHien);
-            if(model.getFrom().equals(currentUserId))
-            {
-                holder.tvSend.setText(model.getMessage());
-                holder.tvReceive.setVisibility(View.INVISIBLE);
-            }
-            else
-            {
-                holder.tvReceive.setText(model.getMessage());
-                holder.tvSend.setVisibility(View.INVISIBLE);
-            }
-        }
-        if(model.getType().equals("image"))
-        {
-            //Hiện layout image
-            holder.layout_img.setLayoutParams(holder.paramsHien);
-            if(model.getFrom().equals(currentUserId))
-            {
-                Glide.with(context).load(model.getMessage()).into(holder.ivSend);
-                holder.ivReceive.setVisibility(View.GONE);
-            }
-            else
-            {
-                Glide.with(context).load(model.getMessage()).into(holder.ivReceive);
-                holder.ivSend.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return super.getItemCount();
+        this.friendId = friendId;
+        this.list = list;
+        userRef = FirebaseDatabase.getInstance().getReference().child("Users");
     }
 
     @NonNull
@@ -95,12 +54,81 @@ public class ReadFriendMessageAdapter extends FirebaseRecyclerAdapter<Message, R
         return new ReadFriendMessageAdapter.MessageHolder(view);
     }
 
+    @Override
+    public void onBindViewHolder(@NonNull MessageHolder holder, int position) {
+        holder.tvTime.setText(list.get(position).getTime());
+
+        if (list.get(position).getFrom().equals(currentUserId))
+        {
+            //Là tin nhắn của mình thì ẩn avatar
+            holder.cover.setVisibility(View.GONE);
+        }
+        else
+        {
+            holder.cover.setVisibility(View.VISIBLE);
+        }
+
+        if(list.get(position).getType().equals("text"))
+        {
+            //Hiện layout text
+            holder.layout_text.setVisibility(View.VISIBLE);
+            holder.layout_img.setVisibility(View.GONE);
+            if(list.get(position).getFrom().equals(currentUserId))
+            {
+                holder.tvSend.setText(list.get(position).getMessage());
+                holder.tvSend.setVisibility(View.VISIBLE);
+                holder.tvReceive.setVisibility(View.GONE);
+            }
+            else
+            {
+                holder.tvReceive.setText(list.get(position).getMessage());
+                holder.tvReceive.setVisibility(View.VISIBLE);
+                holder.tvSend.setVisibility(View.GONE);
+            }
+        }
+        else if(list.get(position).getType().equals("image"))
+        {
+            //Hiện layout image
+            holder.layout_img.setVisibility(View.VISIBLE);
+            holder.layout_text.setVisibility(View.GONE);
+            if(list.get(position).getFrom().equals(currentUserId))
+            {
+                Glide.with(context).load(list.get(position).getMessage()).into(holder.ivSend);
+                holder.ivSend.setVisibility(View.VISIBLE);
+                holder.ivReceive.setVisibility(View.GONE);
+            }
+            else
+            {
+                Glide.with(context).load(list.get(position).getMessage()).into(holder.ivReceive);
+                holder.ivReceive.setVisibility(View.VISIBLE);
+                holder.ivSend.setVisibility(View.GONE);
+            }
+        }
+
+        //Test
+        holder.layout_all.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Loi", "pos: " + position);
+                Log.d("Loi", "mes: " + list.get(position).getMessage());
+                Log.d("Loi", "type: " + list.get(position).getType());
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return list.size();
+    }
+
+
     public class MessageHolder extends RecyclerView.ViewHolder {
         TextView tvReceive, tvSend, tvTime;
         RelativeLayout layout_text, layout_img;
-        ImageView ivReceive, ivSend;
+        LinearLayout layout_all;
+        ImageView ivReceive, ivSend, ivAvater;
         CardView cover;
-        LinearLayout.LayoutParams paramsAn, paramsHien;
+
         public MessageHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -110,16 +138,54 @@ public class ReadFriendMessageAdapter extends FirebaseRecyclerAdapter<Message, R
             cover = itemView.findViewById(R.id.cover);
             layout_text = itemView.findViewById(R.id.layout_text);
             layout_img = itemView.findViewById(R.id.layout_img);
+            layout_all = itemView.findViewById(R.id.layout_all);
             ivReceive = itemView.findViewById(R.id.ivReceive);
             ivSend = itemView.findViewById(R.id.ivSend);
+            ivAvater = itemView.findViewById(R.id.ivAvatar);
 
-            paramsAn = (LinearLayout.LayoutParams) layout_img.getLayoutParams();
-            paramsHien = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            paramsAn.height = 0;
+
 
             //Ẩn các layout
-            layout_img.setLayoutParams(paramsAn);
-            layout_text.setLayoutParams(paramsAn);
+            layout_img.setVisibility(View.GONE);
+            layout_text.setVisibility(View.GONE);
+
+            tvTime.setVisibility(View.GONE);
+
+            userRef.child(friendId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists() && snapshot.hasChild("avatar"))
+                    {
+                        Glide.with(context).load(snapshot.child("avatar").getValue().toString()).into(ivAvater);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+            layout_all.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //tvTime.setVisibility(View.VISIBLE);
+                }
+            });
+
+            layout_all.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus)
+                    {
+                        tvTime.setVisibility(View.VISIBLE);
+                    }
+                    else
+                    {
+                        tvTime.setVisibility(View.GONE);
+                    }
+                }
+            });
         }
     }
 }

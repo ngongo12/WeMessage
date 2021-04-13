@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -24,16 +25,19 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        restoringDarkMode();
         super.onCreate(savedInstanceState);
+
+        Log.d("Loi", "onCreate: splash");
 
         mAuth = FirebaseAuth.getInstance();
         //Lấy tài khoản từ lần đăng nhập trước
         autoLogin();
-        restoringDarkMode();
     }
 
+
     private void autoLogin() {
-        //restoringPreferences(); tạm tắt
+        restoringPreferences();
         if(!(email+pass).equals(""))
         {
             mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -60,6 +64,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void gotoLoginActiviy() {
         //Chuyển đến LoginActivity
         Intent intent = new Intent(SplashScreenActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
@@ -67,6 +72,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void gotoMainActivity() {
         //Chuyển đến MainActivity
         Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
@@ -87,10 +93,12 @@ public class SplashScreenActivity extends AppCompatActivity {
         boolean isDark = sp.getBoolean("dark", false);
         if (isDark) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            Log.d("Loi", "restoringDarkMode: true");
         }
         else
         {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            Log.d("Loi", "restoringDarkMode: false");
         }
     }
 }

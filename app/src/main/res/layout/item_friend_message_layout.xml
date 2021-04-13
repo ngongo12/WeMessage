@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"/>
             <TextView
                 android:id="@+id/tvMessage"
-                android:text="Nội dung tin nhắn dfjk fjdfj jfjdj jfdjf jfdjdf jfdjf jfd"
+                android:text="Nội dung"
                 style="@style/TextViewMessage"
                 android:layout_below="@id/tvName"
                 android:layout_centerVertical="true"

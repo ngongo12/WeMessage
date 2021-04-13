@@ -10,16 +10,17 @@
     <include
         layout="@layout/toolbar_chat"
         />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/layout_chat"
         android:layout_below="@id/toolbar">
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <RelativeLayout
         android:id="@+id/layout_chat"

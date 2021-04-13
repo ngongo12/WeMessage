@@ -63,6 +63,12 @@ public class SearchFriendActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         //Khởi tạo các biến dành cho firebase
         mAuth = FirebaseAuth.getInstance();
@@ -72,6 +78,9 @@ public class SearchFriendActivity extends AppCompatActivity {
 
 
         list = new ArrayList<>();
+        //Hiển thị rcv
+        adapter = new SearchFriendAdapter(SearchFriendActivity.this, list);
+        rcv.setAdapter(adapter);
 
         edSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -114,7 +123,7 @@ public class SearchFriendActivity extends AppCompatActivity {
 
     private void search(String s) {
         //userRef.orderByChild("name").startAt(s).endAt(s+"\uf8ff") không đúng lắm
-        userRef.orderByChild("name").addListenerForSingleValueEvent(new ValueEventListener() {
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();
@@ -139,9 +148,7 @@ public class SearchFriendActivity extends AppCompatActivity {
                 {
                     tvNotFound.setText("Tìm thấy " + list.size() +" kết quả tương ứng");
                 }
-                //Hiển thị rcv
-                adapter = new SearchFriendAdapter(SearchFriendActivity.this, list);
-                rcv.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
             }
 
             @Override

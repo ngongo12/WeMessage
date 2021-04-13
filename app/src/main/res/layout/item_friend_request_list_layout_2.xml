@@ -60,7 +60,7 @@
             android:layout_centerVertical="true"
             android:layout_margin="8dp"
             android:background="@drawable/button_gradient_blue"
-            android:text="Kết bạn"
+            android:text="Đồng ý"
             android:textColor="@color/white"
             android:textSize="13sp" />
 

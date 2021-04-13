@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -43,19 +40,16 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 import com.wemessage.adapter.ReadFriendMessageAdapter;
 import com.wemessage.model.FriendInfo;
-import com.wemessage.model.Message;
+import com.wemessage.model.Messages;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import static android.view.animation.Animation.START_ON_FIRST_FRAME;
 
 public class ChatWithFriendActivity extends AppCompatActivity {
 
@@ -67,6 +61,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     LinearLayout layout_icon;
     SwipeRefreshLayout swipeLayout;
     int numLimit = 8;
+
 
     //Các view của dialog send Image
     Button btnSendImg;
@@ -83,6 +78,8 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     String currentUserId;
     StorageReference imgRef;
+
+    ArrayList<Messages> list;
 
     ReadFriendMessageAdapter adapter;
 
@@ -110,6 +107,8 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         rcv.setLayoutManager(layoutManager);
         rcv.setHasFixedSize(true);
 
+        list = new ArrayList<>();
+
         layoutManager.setStackFromEnd(true);
         //layoutManager.setReverseLayout(true);
 
@@ -128,12 +127,21 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         tvFriendName = toolbar.findViewById(R.id.tvFriendName);
         tvFriendStatus = toolbar.findViewById(R.id.tvFriendStatus);
 
         getMyFriendInfo();
-        
+        //Xử lý adapter
+        adapter = new ReadFriendMessageAdapter(list, currentUserId, myFriendId, friendInfo, this);
+        rcv.setAdapter(adapter);
+
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,15 +166,13 @@ public class ChatWithFriendActivity extends AppCompatActivity {
             }
         });
 
-        readMessages();
+        readMessages(-1);
 
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 numLimit += 5;
-                adapter.updateOptions(new FirebaseRecyclerOptions.Builder<Message>()
-                        .setQuery(messageRef.child(currentUserId).child(myFriendId).child("messages").limitToLast(numLimit), Message.class)
-                        .build());
+                readMessages(0);
                 swipeLayout.setRefreshing(false);
             }
         });
@@ -216,14 +222,31 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         startActivityForResult(intent, GalleryPick);
     }
 
-    private void readMessages() {
+    private void readMessages(int scrollIndex) {
         //Thực hiện query
-        FirebaseRecyclerOptions<Message> options = new FirebaseRecyclerOptions.Builder<Message>()
-                .setQuery(messageRef.child(currentUserId).child(myFriendId).child("messages").limitToLast(numLimit), Message.class)
-                .build();
-        adapter = new ReadFriendMessageAdapter(options, currentUserId, friendInfo, getApplicationContext());
-        adapter.startListening();
-        rcv.setAdapter(adapter);
+        messageRef.child(currentUserId).child(myFriendId).child("messages").limitToLast(numLimit).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                list.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren())
+                {
+                    Messages item = dataSnapshot.getValue(Messages.class);
+                    list.add(item);
+                }
+                //Xử lý adapter
+                adapter = new ReadFriendMessageAdapter(list, currentUserId, myFriendId, friendInfo, ChatWithFriendActivity.this);
+                rcv.setAdapter(adapter);
+                if (scrollIndex == 0)
+                {
+                    scrollToBottom(0);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         //Cập nhật thời gian đọc tin mới nhất
         messageRef.child(currentUserId).child(myFriendId).child("last_seen").setValue(sdf.format(new Date()));
@@ -388,6 +411,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                 {
                     Toast.makeText(ChatWithFriendActivity.this, "Đã gửi", Toast.LENGTH_SHORT).show();
 
+                    //Gửi lên cloud messages
                 }
                 else
                 {
@@ -397,10 +421,26 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         });
     }
 
+    public void scrollToBottom(int index)
+    {
+        if (index == -1) {
+            try {
+                rcv.smoothScrollToPosition(rcv.getAdapter().getItemCount());
+            } catch (Exception e) {
+                rcv.smoothScrollToPosition(rcv.getAdapter().getItemCount()-1);
+            }
+        }
+        else
+        {
+            rcv.smoothScrollToPosition(0);
+        }
+
+    }
+
+
     @Override
     protected void onStart() {
         super.onStart();
-        adapter.startListening();
         try {
             rcv.smoothScrollToPosition(rcv.getAdapter().getItemCount()+1);
         }
@@ -413,8 +453,17 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        adapter.startListening();
         //Cập nhật thời gian đọc tin mới nhất
         messageRef.child(currentUserId).child(myFriendId).child("last_seen").setValue(sdf.format(new Date()));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 }
