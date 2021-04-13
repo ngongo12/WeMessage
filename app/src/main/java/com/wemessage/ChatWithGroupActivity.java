@@ -40,7 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.wemessage.adapter.ReadFriendMessageAdapter;
+import com.wemessage.adapter.ReadGroupMessageAdapter;
 import com.wemessage.model.FriendInfo;
 import com.wemessage.model.Messages;
 
@@ -51,17 +51,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChatWithFriendActivity extends AppCompatActivity {
+public class ChatWithGroupActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     TextView tvFriendName, tvFriendStatus;
     EditText edMessage;
     ImageView btnSend, ivPicture, ivMicro, ivEmoji;
     RecyclerView rcv;
-    LinearLayout layout_icon;
+    Button btnJoin;
+    LinearLayout layout_icon, layout_join;
     SwipeRefreshLayout swipeLayout;
-    int numLimit = 8;
 
+    int numLimit = 8;
 
     //Các view của dialog send Image
     Button btnSendImg;
@@ -69,11 +70,11 @@ public class ChatWithFriendActivity extends AppCompatActivity {
 
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 
-    String myFriendId;
+    String groupId;
     FriendInfo friendInfo;
 
     //Các biến dành cho firebase
-    DatabaseReference rootRef, messageRef;
+    DatabaseReference rootRef, messageRef, groupRef;
     FirebaseUser currentUser;
     FirebaseAuth mAuth;
     String currentUserId;
@@ -81,7 +82,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
 
     ArrayList<Messages> list;
 
-    ReadFriendMessageAdapter adapter;
+    ReadGroupMessageAdapter adapter;
 
     private static final int GalleryPick = 1;
     Uri uriImage;
@@ -89,7 +90,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_with_friend);
+        setContentView(R.layout.activity_chat_with_group);
 
         //Ánh xạ các view
         toolbar = findViewById(R.id.toolbar);
@@ -98,8 +99,10 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         ivPicture = findViewById(R.id.ivPicture);
         ivMicro = findViewById(R.id.ivMicro);
         ivEmoji = findViewById(R.id.ivEmoji);
+        btnJoin = findViewById(R.id.btnJoin);
         rcv = findViewById(R.id.rcv);
         layout_icon = findViewById(R.id.layout_icon);
+        layout_join = findViewById(R.id.layout_join);
         swipeLayout = findViewById(R.id.swipeLayout);
 
         //Set layout cho rcv
@@ -112,13 +115,13 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         layoutManager.setStackFromEnd(true);
         //layoutManager.setReverseLayout(true);
 
-
         //Khởi tạo các biến dành cho firebase
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         currentUserId = currentUser.getUid();
         rootRef = FirebaseDatabase.getInstance().getReference();
-        messageRef = rootRef.child("Messages");
+        groupRef = rootRef.child("Groups");
+        //messageRef = rootRef.child("Messages");
         imgRef = FirebaseStorage.getInstance().getReference().child("messages");
 
         //Xử lý toolbar
@@ -134,12 +137,22 @@ public class ChatWithFriendActivity extends AppCompatActivity {
             }
         });
 
+        btnJoin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                joinToGroup();
+            }
+        });
+
         tvFriendName = toolbar.findViewById(R.id.tvFriendName);
         tvFriendStatus = toolbar.findViewById(R.id.tvFriendStatus);
 
-        getMyFriendInfo();
+        getMyGroupInfo();
+        readMessages();
+
         //Xử lý adapter
-        adapter = new ReadFriendMessageAdapter(list, currentUserId, myFriendId, friendInfo, this);
+        adapter = new ReadGroupMessageAdapter(list, currentUserId, groupId, this);
+        //adapter.startListening();
         rcv.setAdapter(adapter);
 
         btnSend.setOnClickListener(new View.OnClickListener() {
@@ -166,13 +179,11 @@ public class ChatWithFriendActivity extends AppCompatActivity {
             }
         });
 
-        readMessages(-1);
-
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 numLimit += 5;
-                readMessages(0);
+                //readMessages();
                 swipeLayout.setRefreshing(false);
             }
         });
@@ -214,17 +225,28 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         });
     }
 
-    private void sendPicture() {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-
-        intent.setType("image/*");
-        startActivityForResult(intent, GalleryPick);
+    private void joinToGroup() {
+        rootRef.child("Groups").child(groupId).child("members")
+                .child(currentUserId)
+                .child("last_seen").setValue(sdf.format(new Date()))
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful())
+                        {
+                            Toast.makeText(ChatWithGroupActivity.this, "Gia nhập thành công", Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                        {
+                            Toast.makeText(ChatWithGroupActivity.this, "Có lỗi xảy ra, hã thử lại", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
-    private void readMessages(int scrollIndex) {
+    private void readMessages() {
         //Thực hiện query
-        messageRef.child(currentUserId).child(myFriendId).child("messages").limitToLast(numLimit).addValueEventListener(new ValueEventListener() {
+        messageRef.limitToLast(numLimit).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();
@@ -233,13 +255,12 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                     Messages item = dataSnapshot.getValue(Messages.class);
                     list.add(item);
                 }
+                //Toast.makeText(ChatWithFriendActivity.this, ""+ list.size(), Toast.LENGTH_SHORT).show();
                 //Xử lý adapter
-                adapter = new ReadFriendMessageAdapter(list, currentUserId, myFriendId, friendInfo, ChatWithFriendActivity.this);
+                adapter = new ReadGroupMessageAdapter(list, currentUserId, groupId, ChatWithGroupActivity.this);
+                //adapter.startListening();
                 rcv.setAdapter(adapter);
-                if (scrollIndex == 0)
-                {
-                    scrollToBottom(0);
-                }
+                //adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -249,8 +270,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         });
 
         //Cập nhật thời gian đọc tin mới nhất
-        messageRef.child(currentUserId).child(myFriendId).child("last_seen").setValue(sdf.format(new Date()));
-
+        groupRef.child(groupId).child("members").child(currentUserId).child("last_seen").setValue(sdf.format(new Date()));
     }
 
     private void sendMessage() {
@@ -265,30 +285,66 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         send(messageContent, "text");
     }
 
-    private void getMyFriendInfo() {
+    private void send(String content, String type) {
+
+        DatabaseReference userMessageKeyRef = messageRef.push();
+        String messagePushId = userMessageKeyRef.getKey();
+        Map mapMessageContent = new HashMap();
+        mapMessageContent.put("message", content);
+        mapMessageContent.put("type", type);
+        mapMessageContent.put("from", currentUserId);
+
+        //Lấy thời gian gửi
+        Date date = new Date();
+        mapMessageContent.put("time", sdf.format(date));
+
+        //Bỏ chung vào 1 map để gửi lên firebase
+
+        messageRef.child(messagePushId).updateChildren(mapMessageContent).addOnCompleteListener(new OnCompleteListener() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                if(task.isSuccessful())
+                {
+                    Toast.makeText(ChatWithGroupActivity.this, "Đã gửi", Toast.LENGTH_SHORT).show();
+
+                }
+                else
+                {
+                    Toast.makeText(ChatWithGroupActivity.this, "Lỗi " + task.getException().toString(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public void scroolToBottom()
+    {
+        rcv.smoothScrollToPosition(list.size());
+    }
+
+    private void getMyGroupInfo() {
         Intent intent = getIntent();
-        myFriendId = intent.getStringExtra("myFriendId");
-        friendInfo = new FriendInfo();
-        friendInfo.setUid(myFriendId);
-        rootRef.child("Users").child(myFriendId).addValueEventListener(new ValueEventListener() {
+        groupId = intent.getStringExtra("groupId");
+
+        //Khai báo cho messageRef
+        messageRef = rootRef.child("Groups").child(groupId).child("messages");
+
+        rootRef.child("Groups").child(groupId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists())
+                if (snapshot.hasChild("name"))
                 {
-                    if (snapshot.hasChild("name"))
+                    tvFriendName.setText(snapshot.child("name").getValue().toString());
+                }
+                if (snapshot.hasChild("members"))
+                {
+                    tvFriendStatus.setText(snapshot.child("members").getChildrenCount() + " thành viên");
+                }
+                if (snapshot.hasChild("members"))
+                {
+                    //là thành viên thì ẩn
+                    if (snapshot.child("members").hasChild(currentUserId))
                     {
-                        friendInfo.setName(snapshot.child("name").getValue().toString());
-                        tvFriendName.setText(friendInfo.getName());
-                    }
-                    else
-                    {
-                        friendInfo.setName(myFriendId);
-                    }
-                    if(snapshot.hasChild("state"))
-                    {
-                        String state = snapshot.child("state").getValue().toString();
-                        friendInfo.setStatus(state);
-                        tvFriendStatus.setText(state);
+                        layout_join.setVisibility(View.GONE);
                     }
                 }
             }
@@ -319,6 +375,14 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         }
     }
 
+    private void sendPicture() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+
+        intent.setType("image/*");
+        startActivityForResult(intent, GalleryPick);
+    }
+
     private void openDialogSendImage() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         View view = LayoutInflater.from(getApplicationContext()).inflate(
@@ -344,7 +408,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(uriImage == null)
                 {
-                    Toast.makeText(ChatWithFriendActivity.this, "Có lỗi trong quá trình lấy link ảnh", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChatWithGroupActivity.this, "Có lỗi trong quá trình lấy link ảnh", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -370,7 +434,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                                 }
                                 else
                                 {
-                                    Toast.makeText(ChatWithFriendActivity.this, "Gửi ảnh thất bại", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ChatWithGroupActivity.this, "Gửi ảnh thất bại", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -379,64 +443,6 @@ public class ChatWithFriendActivity extends AppCompatActivity {
             }
         });
     }
-
-    public void send(String content, String type)
-    {
-        String myMessageRef = "Messages/" + currentUserId + "/" + myFriendId + "/messages";
-        String myFriendMessageRef = "Messages/" + myFriendId + "/" + currentUserId + "/messages";
-
-        DatabaseReference userMessageKeyRef
-                = rootRef.child("Messages")
-                .child(currentUserId)
-                .child(myFriendId).push();
-        String messagePushId = userMessageKeyRef.getKey();
-        Map mapMessageContent = new HashMap();
-        mapMessageContent.put("message", content);
-        mapMessageContent.put("type", type);
-        mapMessageContent.put("from", currentUserId);
-
-        //Lấy thời gian gửi
-        Date date = new Date();
-        mapMessageContent.put("time", sdf.format(date));
-
-        //Bỏ chung vào 1 map để gửi lên firebase
-        Map mapMessageContentDetail = new HashMap();
-        mapMessageContentDetail.put(myMessageRef + "/" + messagePushId, mapMessageContent);
-        mapMessageContentDetail.put(myFriendMessageRef + "/" + messagePushId, mapMessageContent);
-
-        rootRef.updateChildren(mapMessageContentDetail).addOnCompleteListener(new OnCompleteListener() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                if(task.isSuccessful())
-                {
-                    Toast.makeText(ChatWithFriendActivity.this, "Đã gửi", Toast.LENGTH_SHORT).show();
-
-                    //Gửi lên cloud messages
-                }
-                else
-                {
-                    Toast.makeText(ChatWithFriendActivity.this, "Lỗi " + task.getException().toString(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    public void scrollToBottom(int index)
-    {
-        if (index == -1) {
-            try {
-                rcv.smoothScrollToPosition(rcv.getAdapter().getItemCount());
-            } catch (Exception e) {
-                rcv.smoothScrollToPosition(rcv.getAdapter().getItemCount()-1);
-            }
-        }
-        else
-        {
-            rcv.smoothScrollToPosition(0);
-        }
-
-    }
-
 
     @Override
     protected void onStart() {
@@ -454,16 +460,6 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         //Cập nhật thời gian đọc tin mới nhất
-        messageRef.child(currentUserId).child(myFriendId).child("last_seen").setValue(sdf.format(new Date()));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
+        groupRef.child(groupId).child("members").child(currentUserId).child("last_seen").setValue(sdf.format(new Date()));
     }
 }

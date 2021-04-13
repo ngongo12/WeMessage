@@ -1,19 +1,19 @@
 package com.wemessage.model;
 
-public class Message {
+public class Messages {
     private String from;
     private String message;
     private String time;
     private String type;
 
-    public Message(String from, String message, String time, String type) {
+    public Messages(String from, String message, String time, String type) {
         this.from = from;
         this.message = message;
         this.time = time;
         this.type = type;
     }
 
-    public Message() {
+    public Messages() {
     }
 
     public String getFrom() {

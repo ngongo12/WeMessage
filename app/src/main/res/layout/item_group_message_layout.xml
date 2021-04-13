@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/layout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal">
 
@@ -11,8 +12,8 @@
         android:layout_height="55dp"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
         >
         <androidx.cardview.widget.CardView
             android:id="@+id/coverR"
@@ -75,7 +76,7 @@
                 android:layout_height="wrap_content"/>
             <TextView
                 android:id="@+id/tvMessage"
-                android:text="Nội dung tin nhắn dfjk fjdfj jfjdj jfdjf jfdjdf jfdjf jfd"
+                android:text="Nội dung"
                 style="@style/TextViewMessage"
                 android:layout_below="@id/tvName"
                 android:layout_centerVertical="true"
@@ -84,7 +85,6 @@
         </RelativeLayout>
         <TextView
             android:layout_alignParentBottom="true"
-            android:background="@color/black"
             style="@style/Line"/>
     </RelativeLayout>
 

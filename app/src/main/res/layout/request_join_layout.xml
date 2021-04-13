@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="Bạn không là thành viên của nhóm này"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_marginTop="250dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnJoin"
+        android:text="Tham gia nhóm"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
+        android:textColor="@color/whitefa"
+        android:background="@drawable/button_gradient_blue"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

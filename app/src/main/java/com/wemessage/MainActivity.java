@@ -25,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wemessage.adapter.MainViewPagerAdapter;
 import com.wemessage.fragment.OtherFragment;
+import com.wemessage.service.ReceiveMessageService;
 import com.wemessage.service.UpdateUserStateService;
 
 import java.text.SimpleDateFormat;
@@ -53,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Tắt service chờ tin nhắn đến
+        Intent intentService = new Intent(this, ReceiveMessageService.class);
+        stopService(intentService);
 
         Log.d("Loi", "onCreate: mở main");
 
@@ -172,6 +177,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        //Mở service chờ tin nhắn đến
+        Intent intentService = new Intent(this, ReceiveMessageService.class);
+        intentService.putExtra("id", currentUserId);
+        startService(intentService);
         //Cập nhật trạng thái người dùng khi offline
         updateUserState("offline");
         super.onDestroy();
