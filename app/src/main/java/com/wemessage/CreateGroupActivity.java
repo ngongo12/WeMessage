@@ -112,7 +112,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    CreateGroupActivity.super.onBackPressed();
+                    finish();
                 }
             }
         });

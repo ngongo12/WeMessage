@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/ChatActivityBackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChatWithGroupActivity">
+
+    <include
+        layout="@layout/toolbar_chat"
+        />
+
+    <LinearLayout
+        android:id="@+id/layout_join"
+        android:elevation="15dp"
+        android:layout_below="@id/toolbar"
+        style="@style/SubBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include layout="@layout/request_join_layout"/>
+    </LinearLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/layout_chat"
+        android:layout_below="@id/toolbar">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <RelativeLayout
+        android:id="@+id/layout_chat"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <include layout="@layout/chat_input_layout"/>
+    </RelativeLayout>
+
+</RelativeLayout>

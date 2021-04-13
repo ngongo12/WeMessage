@@ -58,14 +58,9 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
-
-        if (list.get(position).getName() != null)
-        {
-            holder.tvName.setText(list.get(position).getName());
-        }
-        if(list.get(position).getStatus() != null) {
+        holder.tvName.setText(list.get(position).getName());
+        if(list.get(position).getStatus() != null)
             holder.tvInfo.setText(list.get(position).getStatus());
-        }
 
         //Nếu có avatar thì hiển thị không thì mặc định
         if (list.get(position).getAvatar() != null)
@@ -77,15 +72,14 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
         myRequestRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (list.get(position).getUid() != null) {
-                    if (snapshot.hasChild(list.get(position).getUid())) {
-                        //Nếu có trong danh sách yêu cầu kết bạn thì ẩn đi
-                        holder.layout.setVisibility(View.GONE
-                        );
-                        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
-                        params.height = 0;
-                        holder.layout.setLayoutParams(params);
-                    }
+                if (snapshot.hasChild(list.get(position).getUid()))
+                {
+                    //Nếu có trong danh sách yêu cầu kết bạn thì ẩn đi
+                    holder.layout.setVisibility(View.GONE
+                    );
+                    RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
+                    params.height = 0;
+                    holder.layout.setLayoutParams(params);
                 }
             }
 
