@@ -1,7 +1,10 @@
 package com.wemessage.service;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -31,23 +34,37 @@ public class ReceiveMessageService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Toast.makeText(this, "Mở service", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Mở service", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
         currentUserId = intent.getStringExtra("id");
 
         //myRef = FirebaseDatabase.getInstance().getReference().child("Notification").child(currentUserId);
+        waitingMessage();
+
+        return START_STICKY;
+    }
+
+    @Override
+    public ComponentName startForegroundService(Intent service) {
+
 
         waitingMessage();
 
-        return super.onStartCommand(intent, flags, startId);
+        return super.startForegroundService(service);
     }
 
     @Override
     public void onDestroy() {
         Toast.makeText(this, "Đóng service", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent();
+        intent.setAction("stop_service");
+        sendBroadcast(intent);
         handler.removeCallbacks(chay);
         super.onDestroy();
     }

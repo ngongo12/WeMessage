@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 public class GroupSuggestionFragment extends Fragment {
 
     RecyclerView rcv;
+    LinearLayout layout;
 
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
@@ -50,6 +52,7 @@ public class GroupSuggestionFragment extends Fragment {
 
         //Ánh xạ các view
         rcv = getView().findViewById(R.id.rcv);
+        layout = getView().findViewById(R.id.layout);
 
         //Set layout cho rcv
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -87,6 +90,7 @@ public class GroupSuggestionFragment extends Fragment {
                     }
                 }
                 adapter.notifyDataSetChanged();
+                hideLayout();
             }
 
             @Override
@@ -101,5 +105,17 @@ public class GroupSuggestionFragment extends Fragment {
         Intent intent = new Intent(getActivity(), ChatWithGroupActivity.class);
         intent.putExtra("groupId", groupId);
         startActivity(intent);
+    }
+
+    public void hideLayout()
+    {
+        if (list.size() == 0)
+        {
+            layout.setVisibility(View.GONE);
+        }
+        else
+        {
+            layout.setVisibility(View.VISIBLE);
+        }
     }
 }

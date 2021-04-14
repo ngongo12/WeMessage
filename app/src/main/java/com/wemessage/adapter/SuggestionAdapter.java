@@ -34,7 +34,9 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
     Activity context;
     ArrayList<FriendInfo> list;
     SuggestionFragment fragment;
-    DatabaseReference myRequestRef;
+    DatabaseReference myRequestRef, myFriendRef;
+
+    static int numOfHide = 0;
 
     String currentUserId;
 
@@ -43,8 +45,11 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
         this.list = list;
         this.fragment = fragment;
 
-        currentUserId = currentUserId;
+        numOfHide = 0;
+
+        this.currentUserId = currentUserId;
         myRequestRef = FirebaseDatabase.getInstance().getReference().child("FriendRequests").child(currentUserId);
+        myFriendRef = FirebaseDatabase.getInstance().getReference().child("Friends").child(currentUserId);
 
     }
 
@@ -68,18 +73,53 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
             Glide.with(context).load(list.get(position).getAvatar()).into(holder.ivAvatar);
         }
 
-        //Hiện các user ko có trong yêu cầu kết bạn
+        //Ẩn các user ko có trong yêu cầu kết bạn
         myRequestRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild(list.get(position).getUid()))
                 {
                     //Nếu có trong danh sách yêu cầu kết bạn thì ẩn đi
-                    holder.layout.setVisibility(View.GONE
-                    );
                     RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
                     params.height = 0;
                     holder.layout.setLayoutParams(params);
+
+                    numOfHide++;
+                }
+                else
+                {
+                    RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
+                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    holder.layout.setLayoutParams(params);
+                    numOfHide--;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        //Ẩn các user ko có trong yêu cầu kết bạn
+        myFriendRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild(list.get(position).getUid()))
+                {
+                    //Nếu có trong danh sách yêu cầu kết bạn thì ẩn đi
+                    RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
+                    params.height = 0;
+                    holder.layout.setLayoutParams(params);
+
+                    numOfHide++;
+                }
+                else
+                {
+                    RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
+                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    holder.layout.setLayoutParams(params);
+                    numOfHide--;
                 }
             }
 
