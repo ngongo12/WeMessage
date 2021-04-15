@@ -17,6 +17,15 @@
         <!-- Customize your theme here. -->
         <item name="android:textColor">@color/white</item>
 
+        <!-- for snackbar -->
+        <item name="snackbarStyle">@style/snackbar_text</item>
+        <item name="snackbarButtonStyle">@style/ButtonSnackbar</item>
+
+    </style>
+
+    <style name="snackbar_text" parent="@style/Widget.Design.Snackbar">
+        <item name="android:background">@color/black2c</item>
+        <item name="cornerRadius">5dp</item>
     </style>
 
     <!-- Customize for splash screen -->

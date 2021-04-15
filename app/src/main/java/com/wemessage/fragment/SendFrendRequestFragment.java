@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,18 +20,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wemessage.R;
-import com.wemessage.adapter.ReceiveFriendRequestAdapter;
-import com.wemessage.adapter.SendFrendRequestAdapter;
+import com.wemessage.adapter.SendFriendRequestAdapter;
 
 import java.util.ArrayList;
 
 public class SendFrendRequestFragment extends Fragment {
     RecyclerView rcv;
+    LinearLayout layout;
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
     String currentUserId;
     DatabaseReference usersRef, requestRef;
-    SendFrendRequestAdapter adapter;
+    SendFriendRequestAdapter adapter;
     ArrayList<String> list;
 
 
@@ -43,7 +44,10 @@ public class SendFrendRequestFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         rcv = getView().findViewById(R.id.rcv);
+        layout = getView().findViewById(R.id.layout);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         rcv.setLayoutManager(layoutManager);
 
@@ -67,8 +71,9 @@ public class SendFrendRequestFragment extends Fragment {
 
                 }
                 Log.d("Loi", "onDataChange: size " + list.size());
-                adapter=new SendFrendRequestAdapter(list, getActivity(),SendFrendRequestFragment.this,currentUserId);
+                adapter=new SendFriendRequestAdapter(list, getActivity(),SendFrendRequestFragment.this,currentUserId);
                 rcv.setAdapter(adapter);
+                hideLayout();
 
             }
 
@@ -77,5 +82,17 @@ public class SendFrendRequestFragment extends Fragment {
 
             }
         });
+    }
+
+    public void hideLayout()
+    {
+        if (list.size() == 0)
+        {
+            layout.setVisibility(View.GONE);
+        }
+        else
+        {
+            layout.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 
 public class ReceiveFriendRequestFragment extends Fragment {
     RecyclerView rcv;
+    LinearLayout layout;
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
     String currentUserId;
@@ -44,7 +46,10 @@ public class ReceiveFriendRequestFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         rcv = getView().findViewById(R.id.rcv);
+        layout = getView().findViewById(R.id.layout);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         rcv.setLayoutManager(layoutManager);
 
@@ -71,7 +76,7 @@ public class ReceiveFriendRequestFragment extends Fragment {
                 Log.d("Loi", "onDataChange: size " + list.size());
                 adapter=new ReceiveFriendRequestAdapter(list, getActivity(),ReceiveFriendRequestFragment.this,currentUserId);
                 rcv.setAdapter(adapter);
-
+                hideLayout();
             }
 
             @Override
@@ -79,5 +84,17 @@ public class ReceiveFriendRequestFragment extends Fragment {
 
             }
         });
+    }
+
+    public void hideLayout()
+    {
+        if (list.size() == 0)
+        {
+            layout.setVisibility(View.GONE);
+        }
+        else
+        {
+            layout.setVisibility(View.VISIBLE);
+        }
     }
 }

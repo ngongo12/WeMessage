@@ -36,7 +36,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.wemessage.adapter.FriendsForGroupAdapter;
 import com.wemessage.model.FriendInfo;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,12 +57,14 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     ArrayList<FriendInfo> list;
     FriendsForGroupAdapter adapter;
-    Map mapChoosen;
+    Map<String, String> mapChoosen;
 
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
     String currentUserId;
     DatabaseReference usersRef, groupRef;
+
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,17 +198,30 @@ public class CreateGroupActivity extends AppCompatActivity {
         //Lấy key của group mới tạo
         String groupId = groupRef.push().getKey();
 
-        mapChoosen.put(currentUserId, ""); //Map này chứa member
+        mapChoosen.put(currentUserId, null); //Map này chứa member
 
         Map mapGroup = new HashMap();
+        Map mapMember = new HashMap();
+
+
+        String date = sdf.format(new Date());
+        for (String s : mapChoosen.keySet())
+        {
+            //thêm sẵn last_seen
+            //mapMember.put(s+"/date", date);
+            mapGroup.put("members/" + s + "/last_seen", date);
+        }
 
         //Set dữ liệu chuẩn bị đổ lên firebase
         mapGroup.put("name", tvGroupName.getText().toString().trim());
         mapGroup.put("owner", currentUserId);
-        mapGroup.put("members", mapChoosen);
+        //mapGroup.put("members", mapMember);
+
+
+
 
         //Đổ lên firebase
-        groupRef.child(groupId).setValue(mapGroup).addOnCompleteListener(new OnCompleteListener<Void>() {
+        groupRef.child(groupId).updateChildren(mapGroup).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful())

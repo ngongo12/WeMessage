@@ -17,6 +17,7 @@ public class FriendFragment extends Fragment {
     SuggestionFragment suggestionFragment;
     ReceiveFriendRequestFragment requestFragment;
     SendFrendRequestFragment sendFrendRequestFragment;
+    MyFriendFragment myFriendFragment;
     FragmentManager fm;
 
     @Nullable
@@ -33,9 +34,11 @@ public class FriendFragment extends Fragment {
         suggestionFragment = new SuggestionFragment();
         requestFragment = new ReceiveFriendRequestFragment();
         sendFrendRequestFragment = new SendFrendRequestFragment();
+        myFriendFragment = new MyFriendFragment();
 
         fm.beginTransaction().add(R.id.frmSuggestion, suggestionFragment).commit();
         fm.beginTransaction().add(R.id.frmReceivedRequest, requestFragment).commit();
         fm.beginTransaction().add(R.id.frmSentRequest, sendFrendRequestFragment).commit();
+        fm.beginTransaction().add(R.id.frmMyFriend, myFriendFragment).commit();
     }
 }
