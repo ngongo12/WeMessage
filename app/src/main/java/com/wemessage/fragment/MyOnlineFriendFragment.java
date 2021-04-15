@@ -1,11 +1,10 @@
 package com.wemessage.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,28 +19,26 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.wemessage.ChatWithGroupActivity;
 import com.wemessage.R;
-import com.wemessage.adapter.MyGroupAdapter;
+import com.wemessage.adapter.MyOnlineFriendAdapter;
 
 import java.util.ArrayList;
 
-public class MyGroupFragment extends Fragment {
-
+public class MyOnlineFriendFragment extends Fragment {
     RecyclerView rcv;
-    LinearLayout layout;
+    ArrayList<String> list;
+
+    MyOnlineFriendAdapter adapter;
+
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
     String currentUserId;
-    DatabaseReference usersRef, groupRef;
-
-    ArrayList<String> list;
-    MyGroupAdapter adapter;
+    DatabaseReference friendRef;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_mygroup, container, false);
+        return inflater.inflate(R.layout.fragment_my_online_friend, container, false);
     }
 
     @Override
@@ -50,7 +47,6 @@ public class MyGroupFragment extends Fragment {
 
         //Ánh xạ các view
         rcv = getView().findViewById(R.id.rcv);
-        layout = getView().findViewById(R.id.layout);
 
         //Set layout cho rcv
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -60,36 +56,31 @@ public class MyGroupFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         currentUserId = currentUser.getUid();
-        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        groupRef = FirebaseDatabase.getInstance().getReference().child("Groups");
+        friendRef = FirebaseDatabase.getInstance().getReference().child("Friends");
 
         list = new ArrayList<>();
-        adapter = new MyGroupAdapter(list, this, currentUserId, getContext());
+        adapter = new MyOnlineFriendAdapter(getActivity(), list);
         rcv.setAdapter(adapter);
 
-
         displayRCV();
-    }
 
-    private void displayRCV() {
-        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    }
+    public void displayRCV()
+    {
+        friendRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();
-
-
-                for (DataSnapshot dataSnapshot : snapshot.getChildren())
+                for (DataSnapshot data : snapshot.getChildren())
                 {
-                    if (dataSnapshot.hasChild("members"))
+                    if(!data.getKey().equals(currentUserId))
                     {
-                        if (dataSnapshot.child("members").hasChild(currentUserId))
-                        {
-                            list.add(dataSnapshot.getKey());
-                        }
+                        String friendId = data.getKey().toString();
+                        list.add(friendId);
                     }
+                    Log.d("Loi", "MyFriend: " + list.size());
                 }
                 adapter.notifyDataSetChanged();
-                hideLayout();
             }
 
             @Override
@@ -97,24 +88,5 @@ public class MyGroupFragment extends Fragment {
 
             }
         });
-    }
-
-    public void gotoChatActivity(String groupId)
-    {
-        Intent intent = new Intent(getActivity(), ChatWithGroupActivity.class);
-        intent.putExtra("groupId", groupId);
-        startActivity(intent);
-    }
-
-    public void hideLayout()
-    {
-        if (list.size() == 0)
-        {
-            layout.setVisibility(View.GONE);
-        }
-        else
-        {
-            layout.setVisibility(View.VISIBLE);
-        }
     }
 }

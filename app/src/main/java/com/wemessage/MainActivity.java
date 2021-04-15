@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -178,9 +179,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         //Mở service chờ tin nhắn đến
-        Intent intentService = new Intent(this, ReceiveMessageService.class);
+        Intent intentService = new Intent(getApplicationContext(), ReceiveMessageService.class);
         intentService.putExtra("id", currentUserId);
-        startService(intentService);
+        //startService(intentService);
+
+        //startForegroundService(intentService);
         //Cập nhật trạng thái người dùng khi offline
         updateUserState("offline");
         super.onDestroy();

@@ -20,7 +20,22 @@
         <item name="android:screenOrientation">portrait</item>
         <item name="android:configChanges">orientation</item>
         <item name="android:textColor">@color/black22</item>
+
+        <!-- for snackbar -->
+        <item name="snackbarStyle">@style/snackbar_text</item>
+        <item name="snackbarButtonStyle">@style/ButtonSnackbar</item>
     </style>
+
+    <style name="snackbar_text" parent="@style/Widget.Design.Snackbar">
+        <item name="android:background">@drawable/bg_gradient_blue</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+    <style name="ButtonSnackbar" parent="Widget.Design.Snackbar">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    
+    <color name="snackbar_text">@color/white</color>
 
     <!-- Customize for splash screen -->
     <style name="SplashscreenTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
