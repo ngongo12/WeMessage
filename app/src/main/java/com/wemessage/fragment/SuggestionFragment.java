@@ -62,7 +62,6 @@ public class SuggestionFragment extends Fragment {
         //Set layout cho rcv
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         rcv.setLayoutManager(layoutManager);
-        rcv.setNestedScrollingEnabled(false);
 
         //Khởi tạo các biến dành cho firebase
         mAuth = FirebaseAuth.getInstance();
@@ -91,9 +90,16 @@ public class SuggestionFragment extends Fragment {
                     String key = data.getKey();
                     if(!data.getKey().equals(currentUserId))
                     {
-                        FriendInfo item = data.getValue(FriendInfo.class);
-                        //Log.d("Loi", "Suggestion: " + item.getName());
-                        list.add(item);
+                        try {
+                            FriendInfo item = data.getValue(FriendInfo.class);
+                            //Log.d("Loi", "Suggestion: " + item.getName());
+                            list.add(item);
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
+
                     }
                     //Log.d("Loi", "Suggestion: " + list.size());
                 }

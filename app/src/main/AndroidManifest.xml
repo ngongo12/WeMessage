@@ -24,6 +24,9 @@
             android:name=".CreateGroupActivity"
             android:screenOrientation="portrait" />
 
+        <activity android:name=".InfoMyFriendActivity"
+            android:screenOrientation="portrait"/>
+
         <service
             android:name=".service.UpdateUserStateService"
             android:exported="false" />

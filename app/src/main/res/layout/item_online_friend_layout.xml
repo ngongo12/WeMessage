@@ -29,6 +29,7 @@
         android:layout_gravity="center"
         android:textAlignment="center"
         android:maxLines="2"
+        android:autoSizeTextType="uniform"
         style="@style/TextWithAvatar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

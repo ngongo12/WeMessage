@@ -72,7 +72,7 @@ public class MyGroupFragment extends Fragment {
     }
 
     private void displayRCV() {
-        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        groupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();

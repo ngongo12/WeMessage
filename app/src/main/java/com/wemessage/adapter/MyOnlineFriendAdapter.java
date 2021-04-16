@@ -1,6 +1,7 @@
 package com.wemessage.adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wemessage.ChatWithFriendActivity;
 import com.wemessage.R;
 
 import java.util.ArrayList;
@@ -78,6 +80,15 @@ public class MyOnlineFriendAdapter extends RecyclerView.Adapter<MyOnlineFriendAd
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });
+
+        holder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ChatWithFriendActivity.class);
+                intent.putExtra("myFriendId", list.get(position));
+                context.startActivity(intent);
             }
         });
 

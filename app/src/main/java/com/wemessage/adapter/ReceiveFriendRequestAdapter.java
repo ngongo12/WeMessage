@@ -157,8 +157,19 @@ public class ReceiveFriendRequestAdapter extends RecyclerView.Adapter<ReceiveFri
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        //Sau khi add thành công thì xóa khởi database request
-                        myRequestRef.child(friendId).removeValue();
+                        //Xóa trạng thái request từ id của mình
+                        myRequestRef.child(friendId).removeValue(new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                requestRef.child(friendId).child(currentUserId)
+                                        .removeValue(new DatabaseReference.CompletionListener() {
+                                            @Override
+                                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                                Toast.makeText(context, "Xóa yêu cầu kết bạn thành công", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
+                        });
                     }
                 });
     }
