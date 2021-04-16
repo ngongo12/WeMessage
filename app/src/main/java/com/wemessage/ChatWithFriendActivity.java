@@ -3,15 +3,28 @@ package com.wemessage;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -44,6 +57,8 @@ import com.wemessage.adapter.ReadFriendMessageAdapter;
 import com.wemessage.model.FriendInfo;
 import com.wemessage.model.Messages;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -62,10 +77,28 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeLayout;
     int numLimit = 8;
 
+    Handler handler = new Handler();
+    int second = 0;
+    boolean isRunning = true;
+    Runnable runnable;
+
+    // Requesting permission to RECORD_AUDIO
+    private boolean permissionToRecordAccepted = false;
+    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+
+    private static String fileName;
+    private MediaRecorder recorder = null;
+    private MediaPlayer player = null;
+
 
     //Các view của dialog send Image
-    Button btnSendImg;
+    TextView tvTimeRecord;
+    Button btnSendImg, btnSendRecord;
     ImageView ivChoosenImg;
+    AppCompatToggleButton btnRecord;
+
+    BottomSheetDialog imgDialog, audioDialog;
 
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 
@@ -77,7 +110,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     FirebaseUser currentUser;
     FirebaseAuth mAuth;
     String currentUserId;
-    StorageReference imgRef;
+    StorageReference imgRef, audioRef;
 
     ArrayList<Messages> list;
 
@@ -120,6 +153,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         rootRef = FirebaseDatabase.getInstance().getReference();
         messageRef = rootRef.child("Messages");
         imgRef = FirebaseStorage.getInstance().getReference().child("messages");
+        audioRef = FirebaseStorage.getInstance().getReference().child("audio");
 
         //Xử lý toolbar
         setSupportActionBar(toolbar);
@@ -210,6 +244,13 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                     params.width = 0;
                     layout_icon.setLayoutParams(params);
                 }
+            }
+        });
+
+        ivMicro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestPermission();
             }
         });
     }
@@ -320,13 +361,13 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     }
 
     private void openDialogSendImage() {
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        imgDialog = new BottomSheetDialog(this);
         View view = LayoutInflater.from(getApplicationContext()).inflate(
                 R.layout.dialog_send_image,
                 null
         );
 
-        bottomSheetDialog.setContentView(view);
+        imgDialog.setContentView(view);
 
         btnSendImg = view.findViewById(R.id.btnSendImg);
         ivChoosenImg = view.findViewById(R.id.ivChoosenImg);
@@ -335,8 +376,8 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         Glide.with(getApplicationContext()).load(uriImage).into(ivChoosenImg);
 
         //Hiển thị dialog
-        bottomSheetDialog.create();
-        bottomSheetDialog.show();
+        imgDialog.create();
+        imgDialog.show();
 
         //Xử lý nút gửi hình
         btnSendImg.setOnClickListener(new View.OnClickListener() {
@@ -375,9 +416,96 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                             }
                         });
                 //Đóng dialog
-                bottomSheetDialog.dismiss();
+                imgDialog.dismiss();
             }
         });
+    }
+
+    public void openRecordAudioDialog()
+    {
+        fileName = getExternalCacheDir().getAbsolutePath() + "temp.3gp";
+        audioDialog = new BottomSheetDialog(this);
+        View view = LayoutInflater.from(getApplicationContext()).inflate(
+                R.layout.dialog_send_voice,
+                null
+        );
+
+        audioDialog.setContentView(view);
+
+        btnSendRecord = view.findViewById(R.id.btnSendRecord);
+        btnRecord = view.findViewById(R.id.tgRecord);
+        tvTimeRecord = view.findViewById(R.id.tvTimeRecord);
+
+        btnRecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (btnRecord.isChecked())
+                {
+                    isRunning = true;
+                    startRecording();
+                    showTimeRecord();
+                    btnRecord.setEnabled(false);
+                }
+                else
+                {
+                    stopRecording();
+                }
+                btnSendRecord.setVisibility(View.VISIBLE);
+            }
+        });
+
+        audioDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                stopRecording();
+                second = 0;
+                isRunning = false;
+            }
+        });
+
+
+        //Hiển thị dialog
+        audioDialog.create();
+        audioDialog.show();
+
+        //Xử lý nút gửi hình
+        btnSendRecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadAudio();
+                //Đóng dialog
+                audioDialog.dismiss();
+            }
+        });
+    }
+
+    public void showTimeRecord()
+    {
+        if(tvTimeRecord != null && isRunning)
+        {
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    String time = "";
+                    int s = second % 60;
+                    int m = second / 60;
+                    if (m < 10)
+                    {
+                        time += "0";
+                    }
+                    time += m+":";
+                    if (s < 10)
+                    {
+                        time += "0";
+                    }
+                    time += s;
+                    tvTimeRecord.setText(time);
+                    second++;
+                    showTimeRecord();
+                }
+            };
+            handler.postDelayed(runnable, 1000);
+        }
     }
 
     public void send(String content, String type)
@@ -437,6 +565,60 @@ public class ChatWithFriendActivity extends AppCompatActivity {
 
     }
 
+    //Record
+    private void startRecording() {
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setOutputFile(fileName);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            recorder.prepare();
+        } catch (IOException e) {
+            Log.e("Loi", "prepare() failed");
+        }
+
+        recorder.start();
+    }
+
+    private void stopRecording() {
+        if (recorder != null) {
+            recorder.stop();
+            recorder.release();
+            recorder = null;
+        }
+    }
+
+    public void uploadAudio()
+    {
+        Uri uri = Uri.fromFile(new File(fileName));
+        //Tạo id cho audio
+        String id = currentUserId.substring(0, 5) + LocalDateTime.now().toString().substring(5);
+        Log.d("Loi", "id  " + id);
+        audioRef.child(id).putFile(uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                if (task.isSuccessful())
+                {
+                    audioRef.child(id).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            //Lấy được link tiến hành lưu trữ vào database
+                            send(uri.toString(), "audio");
+                            Toast.makeText(ChatWithFriendActivity.this, "Gửi thành công", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                else
+                {
+                    Toast.makeText(ChatWithFriendActivity.this, "Gửi thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
+
 
     @Override
     protected void onStart() {
@@ -465,5 +647,80 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 999: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openRecordAudioDialog();
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Toast.makeText(this, "khong co permission", Toast.LENGTH_SHORT).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+
+    }
+    
+    public void requestPermission()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.RECORD_AUDIO)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Record audio needed");
+                    builder.setPositiveButton(android.R.string.ok, null);
+                    builder.setMessage("please confirm Record audio access");//TODO put real question
+                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @TargetApi(Build.VERSION_CODES.M)
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            requestPermissions(
+                                    new String[]
+                                            {Manifest.permission.RECORD_AUDIO}
+                                    , 999);
+                        }
+                    });
+                    builder.show();
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(this,
+                            new String[]
+                                    {Manifest.permission.RECORD_AUDIO},
+                            999);
+
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
+            } else {
+                openRecordAudioDialog();
+            }
+        }
+        else {
+            openRecordAudioDialog();
+        }
     }
 }

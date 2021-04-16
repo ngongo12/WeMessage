@@ -54,7 +54,13 @@ public class MyOnlineFriendAdapter extends RecyclerView.Adapter<MyOnlineFriendAd
                         holder.tvName.setText(snapshot.child("name").getValue().toString());
                         if (snapshot.hasChild("avatar"))
                         {
-                            Glide.with(context).load(snapshot.child("avatar").getValue().toString()).into(holder.ivAvatar);
+                            try {
+                                Glide.with(context).load(snapshot.child("avatar").getValue().toString()).into(holder.ivAvatar);
+                            }
+                            catch (Exception e)
+                            {
+
+                            }
                         }
                     }
                     else

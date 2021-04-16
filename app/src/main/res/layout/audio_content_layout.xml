@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/layout_audio"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_margin="0dp"
+    android:padding="0dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/ivSpeakerL"
+        android:src="@drawable/ic_speaker_left"
+        android:layout_width="50dp"
+        android:layout_height="50dp"/>
+    <ImageView
+        android:id="@+id/ivSpeakerR"
+        android:src="@drawable/ic_speaker_right"
+        android:layout_alignParentRight="true"
+        android:layout_width="50dp"
+        android:layout_height="50dp"/>
+</RelativeLayout>

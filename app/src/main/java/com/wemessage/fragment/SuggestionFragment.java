@@ -62,6 +62,7 @@ public class SuggestionFragment extends Fragment {
         //Set layout cho rcv
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         rcv.setLayoutManager(layoutManager);
+        rcv.setNestedScrollingEnabled(false);
 
         //Khởi tạo các biến dành cho firebase
         mAuth = FirebaseAuth.getInstance();

@@ -88,10 +88,35 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
                 }
                 else
                 {
-                    RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
-                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    holder.layout.setLayoutParams(params);
-                    numOfHide--;
+                    //Ẩn các user có trong friends
+                    myFriendRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.hasChild(list.get(position).getUid()))
+                            {
+                                //Nếu có trong danh sách yêu cầu kết bạn thì ẩn đi
+                                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
+                                params.height = 0;
+                                holder.layout.setLayoutParams(params);
+                                holder.btnRequest.setVisibility(View.GONE);
+
+                                numOfHide++;
+                            }
+                            else
+                            {
+                                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
+                                params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                                holder.layout.setLayoutParams(params);
+                                holder.btnRequest.setVisibility(View.VISIBLE);
+                                numOfHide--;
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                 }
             }
 
@@ -101,33 +126,7 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
             }
         });
 
-        //Ẩn các user ko có trong yêu cầu kết bạn
-        myFriendRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.hasChild(list.get(position).getUid()))
-                {
-                    //Nếu có trong danh sách yêu cầu kết bạn thì ẩn đi
-                    RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
-                    params.height = 0;
-                    holder.layout.setLayoutParams(params);
 
-                    numOfHide++;
-                }
-                else
-                {
-                    RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.layout.getLayoutParams();
-                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    holder.layout.setLayoutParams(params);
-                    numOfHide--;
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
 
         holder.btnRequest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,7 +155,6 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
             tvInfo = itemView.findViewById(R.id.tvInfo);
             btnRequest = itemView.findViewById(R.id.btnRequest);
             layout = itemView.findViewById(R.id.layout);
-
         }
     }
 }

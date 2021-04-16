@@ -1,6 +1,8 @@
 package com.wemessage.adapter;
 
 import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.wemessage.R;
 import com.wemessage.model.Messages;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -33,6 +36,9 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
     ArrayList<Messages> list;
 
     DatabaseReference userRef;
+
+    //audio
+    MediaPlayer player;
 
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 
@@ -85,6 +91,7 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
             //Hiện layout text
             holder.layout_text.setVisibility(View.VISIBLE);
             holder.layout_img.setVisibility(View.GONE);
+            holder.layout_audio.setVisibility(View.GONE);
             if(list.get(position).getFrom().equals(currentUserId))
             {
                 holder.tvSend.setText(list.get(position).getMessage());
@@ -103,6 +110,7 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
             //Hiện layout image
             holder.layout_img.setVisibility(View.VISIBLE);
             holder.layout_text.setVisibility(View.GONE);
+            holder.layout_audio.setVisibility(View.GONE);
             if(list.get(position).getFrom().equals(currentUserId))
             {
                 Glide.with(context).load(list.get(position).getMessage()).into(holder.ivSend);
@@ -117,6 +125,38 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
             }
         }
 
+        else if (list.get(position).getType().equals("audio"))
+        {
+            //Hiện layout audio
+            holder.layout_img.setVisibility(View.GONE);
+            holder.layout_text.setVisibility(View.GONE);
+            holder.layout_audio.setVisibility(View.VISIBLE);
+
+            if(list.get(position).getFrom().equals(currentUserId))
+            {
+                holder.ivSpeakerL.setVisibility(View.GONE);
+                holder.ivSpeakerR.setVisibility(View.VISIBLE);
+                holder.ivSpeakerR.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        readAudio(list.get(position).getMessage());
+                    }
+                });
+            }
+            else
+            {
+                holder.ivSpeakerL.setVisibility(View.VISIBLE);
+                holder.ivSpeakerR.setVisibility(View.GONE);
+                holder.ivSpeakerL.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        readAudio(list.get(position).getMessage());
+                    }
+                });
+            }
+
+        }
+
         //Test
         holder.layout_all.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,6 +168,26 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
         });
     }
 
+    public void readAudio(String uri)
+    {
+        player = new MediaPlayer();
+        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            player.setDataSource(uri);
+            player.prepare();
+            player.start();
+        }
+        catch (IOException e) {
+            Log.e("Loi", "prepare() failed");
+        }
+    }
+
+    public void stopAudio()
+    {
+        player.release();
+        player = null;
+    }
+
     @Override
     public int getItemCount() {
         return list.size();
@@ -136,9 +196,9 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
 
     public class MessageHolder extends RecyclerView.ViewHolder {
         TextView tvReceive, tvSend, tvTime;
-        RelativeLayout layout_text, layout_img;
+        RelativeLayout layout_text, layout_img, layout_audio;
         LinearLayout layout_all;
-        ImageView ivReceive, ivSend, ivAvater;
+        ImageView ivReceive, ivSend, ivAvater, ivSpeakerL, ivSpeakerR;
         CardView cover;
 
         public MessageHolder(@NonNull View itemView) {
@@ -150,9 +210,12 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
             cover = itemView.findViewById(R.id.cover);
             layout_text = itemView.findViewById(R.id.layout_text);
             layout_img = itemView.findViewById(R.id.layout_img);
+            layout_audio = itemView.findViewById(R.id.layout_audio);
             layout_all = itemView.findViewById(R.id.layout_all);
             ivReceive = itemView.findViewById(R.id.ivReceive);
             ivSend = itemView.findViewById(R.id.ivSend);
+            ivSpeakerL = itemView.findViewById(R.id.ivSpeakerL);
+            ivSpeakerR = itemView.findViewById(R.id.ivSpeakerR);
             ivAvater = itemView.findViewById(R.id.ivAvatar);
 
 
@@ -160,6 +223,7 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
             //Ẩn các layout
             layout_img.setVisibility(View.GONE);
             layout_text.setVisibility(View.GONE);
+            layout_audio.setVisibility(View.GONE);
 
             tvTime.setVisibility(View.GONE);
 

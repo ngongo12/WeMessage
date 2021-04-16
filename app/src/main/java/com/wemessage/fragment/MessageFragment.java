@@ -45,6 +45,7 @@ public class MessageFragment extends Fragment {
     ArrayList<String> list;
 
     FriendMessageAdapter adapter;
+    MyOnlineFriendFragment myOnlineFriendFragment;
 
     @Nullable
     @Override
@@ -73,6 +74,10 @@ public class MessageFragment extends Fragment {
 
         adapter = new FriendMessageAdapter(list,MessageFragment.this, currentUserId, getContext());
         rcv.setAdapter(adapter);
+
+        // online friend
+        myOnlineFriendFragment = new MyOnlineFriendFragment();
+        getFragmentManager().beginTransaction().add(R.id.frmOnlineFriend, myOnlineFriendFragment).commit();
 
 
         //Thực hiện query
