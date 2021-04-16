@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:id="@+id/layout"
+    android:layout_marginRight="8dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="8dp"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
@@ -24,11 +25,11 @@
     <TextView
         android:id="@+id/tvName"
         android:text="Ngô Quốc Vinh"
+        android:minWidth="80dp"
         android:layout_gravity="center"
         android:textAlignment="center"
         android:maxLines="2"
         style="@style/TextWithAvatar"
-        android:autoSizeTextType="uniform"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />

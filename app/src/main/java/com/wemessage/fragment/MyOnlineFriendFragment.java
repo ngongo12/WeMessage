@@ -49,7 +49,7 @@ public class MyOnlineFriendFragment extends Fragment {
         rcv = getView().findViewById(R.id.rcv);
 
         //Set layout cho rcv
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, true);
         rcv.setLayoutManager(layoutManager);
 
         //Khởi tạo các biến dành cho firebase
