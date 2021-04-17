@@ -2,6 +2,7 @@ package com.wemessage;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +32,7 @@ public class SignupActivity extends AppCompatActivity {
     EditText edEmail, edPass, edRePass;
     String email, pass, rePass;
     ProgressDialog progressDialog;
+    String fileName = "userLog.txt";
 
     FirebaseAuth mAuth;
     DatabaseReference rootRef;
@@ -78,6 +80,7 @@ public class SignupActivity extends AppCompatActivity {
                 if(validate())
                 {
                     createNewUser();
+                    savingPreferences();
                 }
             }
         });
@@ -204,5 +207,21 @@ public class SignupActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private void savingPreferences()
+    {
+        //Tạo đối tượng
+        SharedPreferences sp = getSharedPreferences(fileName, MODE_PRIVATE);
+
+        //Tạo đối tượng editor để lưu thay đổi
+        SharedPreferences.Editor editor = sp.edit();
+
+        //Lưu mới vào
+        editor.putString("email", email);
+        editor.putString("pass", pass);
+
+        //chấp nhận lưu xuống file
+        editor.commit();
     }
 }

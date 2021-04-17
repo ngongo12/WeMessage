@@ -28,6 +28,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,6 +44,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -75,8 +79,11 @@ public class ChatWithGroupActivity extends AppCompatActivity {
     Button btnJoin;
     LinearLayout layout_icon, layout_join;
     SwipeRefreshLayout swipeLayout;
+    boolean isExit = false;
 
     int numLimit = 8;
+
+    Messages item;
 
     //Các view của dialog send Image
     TextView tvTimeRecord;
@@ -183,7 +190,6 @@ public class ChatWithGroupActivity extends AppCompatActivity {
         tvFriendStatus = toolbar.findViewById(R.id.tvFriendStatus);
 
         getMyGroupInfo();
-        readMessages();
 
         //Xử lý adapter
         adapter = new ReadGroupMessageAdapter(list, currentUserId, groupId, this);
@@ -218,7 +224,7 @@ public class ChatWithGroupActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 numLimit += 5;
-                //readMessages();
+                readMessages();
                 swipeLayout.setRefreshing(false);
             }
         });
@@ -267,6 +273,67 @@ public class ChatWithGroupActivity extends AppCompatActivity {
         });
     }
 
+    public void getMessage(Messages message)
+    {
+        item = message;
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId())
+        {
+            case R.id.delete_message:
+            {
+                deleteMessage();
+            }
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private void deleteMessage() {
+        //Chỉ xóa được tin nhắn của mình
+        //Đổi tin nhắn về type hide
+        //Với type hide thì id của mình ko hiện gì còn người còn lại thì thấy tin nhắn bị gỡ
+        if (item != null) {
+            if (item.getFrom().equals(currentUserId)) {
+                messageRef.orderByChild("time").equalTo(item.getTime())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                        //Đã lây được key
+                                        //Bắt đầu ẩn
+                                        dataSnapshot.getRef().child("type").setValue("hide").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                Toast.makeText(ChatWithGroupActivity.this, "Ẩn thành công", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                } else {
+                                    Toast.makeText(ChatWithGroupActivity.this, "Lỗi: không tìm được message ", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                item = null;
+            }
+            else
+            {
+                Toast.makeText(this, "Bạn không thể xóa tin nhắn này", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else
+        {
+            Toast.makeText(this, "Lỗi khi lấy message", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void joinToGroup() {
         rootRef.child("Groups").child(groupId).child("members")
                 .child(currentUserId)
@@ -276,6 +343,7 @@ public class ChatWithGroupActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful())
                         {
+                            isExit = false;
                             Toast.makeText(ChatWithGroupActivity.this, "Gia nhập thành công", Toast.LENGTH_SHORT).show();
                         }
                         else
@@ -284,6 +352,47 @@ public class ChatWithGroupActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    //Tạo menu ở toolbar
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.group_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId())
+        {
+            case R.id.exit_group:
+            {
+                exitGroup();
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void exitGroup() {
+        Snackbar.make(toolbar, "Bạn muốn rời khỏi nhóm này " , BaseTransientBottomBar.LENGTH_SHORT)
+                .setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        isExit = true;
+                        groupRef.child(groupId).child("members").child(currentUserId)
+                                .removeValue(new DatabaseReference.CompletionListener() {
+                                    @Override
+                                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                        Toast.makeText(ChatWithGroupActivity.this, "Rời khỏi nhóm thành công", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                        finish();
+                    }
+                })
+                .setTextColor(getResources().getColor(R.color.snackbar_text))
+                .setActionTextColor(getResources().getColor(R.color.snackbar_text))
+                .show();
     }
 
     private void readMessages() {
@@ -387,7 +496,13 @@ public class ChatWithGroupActivity extends AppCompatActivity {
                     if (snapshot.child("members").hasChild(currentUserId))
                     {
                         layout_join.setVisibility(View.GONE);
+                        readMessages();
                     }
+                    {
+                        //Nếu ko phải thì lúc thoát ra ko cập nhật last_seen
+                        isExit = true;
+                    }
+
                 }
             }
 
@@ -641,8 +756,11 @@ public class ChatWithGroupActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        //Cập nhật thời gian đọc tin mới nhất
-        groupRef.child(groupId).child("members").child(currentUserId).child("last_seen").setValue(sdf.format(new Date()));
+        //Nếu không có lệnh ròi khỏi nhóm thì cập nhật ngày xem
+        if (!isExit) {
+            //Cập nhật thời gian đọc tin mới nhất
+            groupRef.child(groupId).child("members").child(currentUserId).child("last_seen").setValue(sdf.format(new Date()));
+        }
     }
 
     @Override

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 public class MyFriendFragment extends Fragment {
 
     RecyclerView rcv;
+    LinearLayout layout;
 
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
@@ -53,6 +54,7 @@ public class MyFriendFragment extends Fragment {
 
         //Ánh xạ các view
         rcv = getView().findViewById(R.id.rcv);
+        layout = getView().findViewById(R.id.layout);
 
         //Set layout cho rcv
         rcv.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -79,6 +81,7 @@ public class MyFriendFragment extends Fragment {
                 }
 
                 adapter.notifyDataSetChanged();
+                hideLayout();
 
             }
 
@@ -94,6 +97,18 @@ public class MyFriendFragment extends Fragment {
         Intent intent = new Intent(getActivity(), ChatWithFriendActivity.class);
         intent.putExtra("myFriendId", id);
         startActivity(intent);
+    }
+
+    public void hideLayout()
+    {
+        if (list.size() == 0)
+        {
+            layout.setVisibility(View.GONE);
+        }
+        else
+        {
+            layout.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

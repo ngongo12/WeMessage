@@ -29,6 +29,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,6 +45,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -104,6 +108,8 @@ public class ChatWithFriendActivity extends AppCompatActivity {
 
     String myFriendId;
     FriendInfo friendInfo;
+
+    Messages item;
 
     //Các biến dành cho firebase
     DatabaseReference rootRef, messageRef;
@@ -253,6 +259,188 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                 requestPermission();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.friend_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId())
+        {
+            case R.id.delete_friend:
+            {
+                deleteFriend();
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId())
+        {
+            case R.id.hide_message:
+            {
+                hideMessage();
+                break;
+            }
+            case R.id.delete_message:
+            {
+                deleteMessage();
+                break;
+            }
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private void deleteMessage() {
+        //Xóa được tin của mình và của bạn
+        //Nếu là tin của mình thì xóa hẳn
+        //Nếu là tin của bạn thì xóa hẳn bên mình ko ảnh hưởng đến bên bạn
+        //Lấy theo time vì 1 khoảng thời gian chỉ gửi được 1 tin nhắn
+        if (item != null) {
+            String from = item.getFrom();
+            messageRef.child(currentUserId).child(myFriendId)
+                    .child("messages").orderByChild("time").equalTo(item.getTime())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists())
+                            {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren())
+                                {
+                                    //Đã lây được key
+                                    String key = dataSnapshot.getKey();
+                                    //Tin của mình
+                                    if (from.equals(currentUserId))
+                                    {
+                                        dataSnapshot.getRef().removeValue(new DatabaseReference.CompletionListener() {
+                                            @Override
+                                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                                //Cập nhật type bên kia
+                                                messageRef.child(myFriendId).child(currentUserId).child("messages").child(key)
+                                                        .child("type").setValue("delete").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        Toast.makeText(ChatWithFriendActivity.this, "Xóa thành công", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                    else
+                                    {
+                                        dataSnapshot.getRef().removeValue(new DatabaseReference.CompletionListener() {
+                                            @Override
+                                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                                Toast.makeText(ChatWithFriendActivity.this, "Xóa thành công", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                Toast.makeText(ChatWithFriendActivity.this, "Lỗi: không tìm được message ", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+            item = null;
+        }
+        else
+        {
+            Toast.makeText(this, "Lỗi khi lấy message", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void hideMessage() {
+        //Ẩn tin nhắn bên mình
+        //Bên đối diện sẽ vẫn hiện
+        //Ẩn được các loại tin nhắn
+        //Đưa về trạng thái type = hide;
+        //Lấy theo time vì 1 khoảng thời gian chỉ gửi được 1 tin nhắn
+        if (item != null) {
+            messageRef.child(currentUserId).child(myFriendId)
+                    .child("messages").orderByChild("time").equalTo(item.getTime())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists())
+                            {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren())
+                                {
+                                    //Đã lây được key
+                                    //Bắt đầu ẩn
+                                    dataSnapshot.getRef().child("type").setValue("hide").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Toast.makeText(ChatWithFriendActivity.this, "Ẩn thành công", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                Toast.makeText(ChatWithFriendActivity.this, "Lỗi: không tìm được message ", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+            item = null;
+        }
+        else
+        {
+            Toast.makeText(this, "Lỗi khi lấy message", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void deleteFriend() {
+        Snackbar.make(toolbar, "Bạn muốn xóa bạn với: " + tvFriendName.getText().toString() , BaseTransientBottomBar.LENGTH_SHORT)
+                .setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Xóa bên mình
+                        rootRef.child("Friends").child(currentUserId).child(myFriendId)
+                                .removeValue(new DatabaseReference.CompletionListener() {
+                                    @Override
+                                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                        //Xóa được bên mình thì xóa bên đối phương
+                                        rootRef.child("Friends").child(myFriendId).child(currentUserId)
+                                                .removeValue(new DatabaseReference.CompletionListener() {
+                                                    @Override
+                                                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                                        Toast.makeText(ChatWithFriendActivity.this, "Đã xóa bạn bè thành công", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    }
+                                });
+                        finish();
+                    }
+                })
+                .setTextColor(getResources().getColor(R.color.snackbar_text))
+                .setActionTextColor(getResources().getColor(R.color.snackbar_text))
+                .show();
+    }
+
+    public void getMessage(Messages messages)
+    {
+        //Dùng để giữ biến message muốn xóa
+        item = messages;
     }
 
     private void sendPicture() {

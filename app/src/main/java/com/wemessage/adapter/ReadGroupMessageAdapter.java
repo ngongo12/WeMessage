@@ -1,10 +1,13 @@
 package com.wemessage.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -22,6 +25,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wemessage.ChatWithFriendActivity;
+import com.wemessage.ChatWithGroupActivity;
 import com.wemessage.R;
 import com.wemessage.model.Messages;
 
@@ -61,6 +66,7 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
     public void onBindViewHolder(@NonNull MessageHolder holder, int position) {
         holder.tvTime.setText(list.get(position).getTime());
 
+
         if (list.get(position).getFrom().equals(currentUserId))
         {
             //Là tin nhắn của mình thì ẩn avatar
@@ -97,12 +103,14 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
                 holder.tvSend.setText(list.get(position).getMessage());
                 holder.tvSend.setVisibility(View.VISIBLE);
                 holder.tvReceive.setVisibility(View.GONE);
+                holder.tvSend.setTypeface(null, Typeface.NORMAL);
             }
             else
             {
                 holder.tvReceive.setText(list.get(position).getMessage());
                 holder.tvReceive.setVisibility(View.VISIBLE);
                 holder.tvSend.setVisibility(View.GONE);
+                holder.tvReceive.setTypeface(null, Typeface.NORMAL);
             }
         }
         else if(list.get(position).getType().equals("image"))
@@ -156,6 +164,37 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
             }
 
         }
+        else if(list.get(position).getType().equals("hide"))
+        {
+            holder.layout_text.setVisibility(View.VISIBLE);
+            holder.layout_img.setVisibility(View.GONE);
+            holder.layout_audio.setVisibility(View.GONE);
+            if(list.get(position).getFrom().equals(currentUserId))
+            {
+                //Ẩn hết
+                holder.tvSend.setText(list.get(position).getMessage());
+                holder.tvSend.setVisibility(View.GONE);
+                holder.tvReceive.setVisibility(View.GONE);
+                holder.tvSend.setTypeface(null, Typeface.ITALIC);
+            }
+            else
+            {
+                holder.tvReceive.setText(list.get(position).getMessage());
+                holder.tvReceive.setVisibility(View.VISIBLE);
+                holder.tvSend.setVisibility(View.GONE);
+                holder.tvReceive.setText("\"Tin nhắn đã bị thu hồi\"");
+                holder.tvReceive.setTypeface(null, Typeface.ITALIC);
+            }
+
+        }
+
+        holder.layout_all.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                ((ChatWithGroupActivity)context).getMessage(list.get(position));
+                return false;
+            }
+        });
 
         //Test
         holder.layout_all.setOnClickListener(new View.OnClickListener() {
@@ -194,7 +233,7 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
     }
 
 
-    public class MessageHolder extends RecyclerView.ViewHolder {
+    public class MessageHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener{
         TextView tvReceive, tvSend, tvTime;
         RelativeLayout layout_text, layout_img, layout_audio;
         LinearLayout layout_all;
@@ -203,6 +242,8 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
 
         public MessageHolder(@NonNull View itemView) {
             super(itemView);
+
+            itemView.setOnCreateContextMenuListener(this);
 
             tvReceive = itemView.findViewById(R.id.tvReceive);
             tvSend = itemView.findViewById(R.id.tvSend);
@@ -227,20 +268,7 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
 
             tvTime.setVisibility(View.GONE);
 
-            /*userRef.child(friendId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists() && snapshot.hasChild("avatar"))
-                    {
-                        Glide.with(context).load(snapshot.child("avatar").getValue().toString()).into(ivAvater);
-                    }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });*/
 
             layout_all.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -262,6 +290,12 @@ public class ReadGroupMessageAdapter extends RecyclerView.Adapter<ReadGroupMessa
                     }
                 }
             });
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.setHeaderTitle("Bạn muốn xóa?");
+            menu.add(Menu.NONE, R.id.delete_message,Menu.NONE, "Xóa tin nhắn");
         }
     }
 }
