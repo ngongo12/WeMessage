@@ -168,6 +168,10 @@ public class MyGroupAdapter extends RecyclerView.Adapter<MyGroupAdapter.Holder> 
                     {
                         text += dataSnapshot.child("message").getValue().toString();
                     }
+                    if(dataSnapshot.child("type").getValue().toString().equals("audio"))
+                    {
+                        text += "[File ghi âm]";
+                    }
                     holder.tvMessage.setText(text);
 
                     //Phần thời gian

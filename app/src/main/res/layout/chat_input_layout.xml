@@ -1,61 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    style="@style/BackgroundChatInput"
     android:layout_height="58dp">
-    <TextView
-        android:layout_alignParentTop="true"
-        style="@style/Line"/>
-    <TextView
-        android:layout_alignParentBottom="true"
-        style="@style/Line"/>
-    <ImageView
-        android:id="@+id/ivEmoji"
-        android:src="@drawable/ic_emoji"
-        android:layout_margin="8dp"
-        android:layout_centerVertical="true"
-        style="@style/IconMenuChatInput"
-        />
-    <EditText
-        android:id="@+id/edMessage"
-        android:textColorHint="@color/grey66"
-        android:background="@null"
-        android:hint="Tin nhắn"
-        android:layout_margin="8dp"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/ivEmoji"
-        android:layout_toLeftOf="@id/ivSend"
+    <RelativeLayout
+        android:id="@+id/layout_chat"
+        style="@style/BackgroundChatInput"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <ImageView
-        android:id="@+id/ivSend"
-        android:src="@drawable/ic_send"
-        android:layout_toLeftOf="@id/layout_icon"
-        style="@style/IconMenuChatInput"
-        android:visibility="invisible"
-        android:layout_marginRight="16dp"
-        android:layout_centerVertical="true"/>
-    <LinearLayout
-        android:id="@+id/layout_icon"
-        android:layout_alignParentRight="true"
-        android:orientation="horizontal"
-        android:paddingRight="16dp"
-        android:layout_centerVertical="true"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+        <TextView
+            android:layout_alignParentTop="true"
+            style="@style/Line"/>
+        <TextView
+            android:layout_alignParentBottom="true"
+            style="@style/Line"/>
         <ImageView
-            android:id="@+id/ivMicro"
-            android:src="@drawable/ic_micro"
+            android:id="@+id/ivEmoji"
+            android:src="@drawable/ic_emoji"
             android:layout_margin="8dp"
             android:layout_centerVertical="true"
-            style="@style/IconMenuChatInput"/>
-        <ImageView
-            android:id="@+id/ivPicture"
-            android:src="@drawable/ic_picture"
+            style="@style/IconMenuChatInput"
+            />
+        <EditText
+            android:id="@+id/edMessage"
+            android:textColorHint="@color/grey66"
+            android:background="@null"
+            android:hint="Tin nhắn"
             android:layout_margin="8dp"
             android:layout_centerVertical="true"
-            style="@style/IconMenuChatInput"/>
+            android:layout_toRightOf="@+id/ivEmoji"
+            android:layout_toLeftOf="@id/ivSend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/ivSend"
+            android:src="@drawable/ic_send"
+            android:layout_toLeftOf="@id/layout_icon"
+            style="@style/IconMenuChatInput"
+            android:visibility="invisible"
+            android:layout_marginRight="16dp"
+            android:layout_centerVertical="true"/>
+        <LinearLayout
+            android:id="@+id/layout_icon"
+            android:layout_alignParentRight="true"
+            android:orientation="horizontal"
+            android:paddingRight="16dp"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/ivMicro"
+                android:src="@drawable/ic_micro"
+                android:layout_margin="8dp"
+                android:layout_centerVertical="true"
+                style="@style/IconMenuChatInput"/>
+            <ImageView
+                android:id="@+id/ivPicture"
+                android:src="@drawable/ic_picture"
+                android:layout_margin="8dp"
+                android:layout_centerVertical="true"
+                style="@style/IconMenuChatInput"/>
 
-    </LinearLayout>
-</RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</FrameLayout>

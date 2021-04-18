@@ -21,6 +21,11 @@
             android:screenOrientation="portrait"
             ></activity>
         <activity
+            android:name=".ChangePasswordActivity"
+            android:theme="@style/LoginscreenTheme"
+            android:screenOrientation="portrait"
+            ></activity>
+        <activity
             android:name=".CreateGroupActivity"
             android:screenOrientation="portrait" />
 

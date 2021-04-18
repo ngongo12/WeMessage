@@ -112,7 +112,7 @@ public class FriendMessageAdapter extends RecyclerView.Adapter<FriendMessageAdap
                     }
                     if (dataSnapshot.child("type").getValue().toString().equals("audio"))
                     {
-                        text += "[Audio]";
+                        text += "[File ghi âm]";
                     }
                     holder.tvMessage.setText(text);
 

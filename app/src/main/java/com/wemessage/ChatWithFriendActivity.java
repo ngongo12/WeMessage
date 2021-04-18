@@ -78,6 +78,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     ImageView btnSend, ivPicture, ivMicro, ivEmoji;
     RecyclerView rcv;
     LinearLayout layout_icon;
+    RelativeLayout layout_chat;
     SwipeRefreshLayout swipeLayout;
     int numLimit = 8;
 
@@ -140,6 +141,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         rcv = findViewById(R.id.rcv);
         layout_icon = findViewById(R.id.layout_icon);
         swipeLayout = findViewById(R.id.swipeLayout);
+        layout_chat = findViewById(R.id.layout_chat);
 
         //Set layout cho rcv
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -178,6 +180,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         tvFriendStatus = toolbar.findViewById(R.id.tvFriendStatus);
 
         getMyFriendInfo();
+        showChatInputLayout();
         //Xử lý adapter
         adapter = new ReadFriendMessageAdapter(list, currentUserId, myFriendId, friendInfo, this);
         rcv.setAdapter(adapter);
@@ -274,10 +277,23 @@ public class ChatWithFriendActivity extends AppCompatActivity {
             case R.id.delete_friend:
             {
                 deleteFriend();
+                break;
             }
+            case R.id.info_friend:
+            {
+                gotoInfoMyFriendActivity();
+                break;
+            }
+
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void gotoInfoMyFriendActivity() {
+        Intent intent = new Intent(this, InfoMyFriendActivity.class);
+        intent.putExtra("friendId", myFriendId);
+        startActivity(intent);
     }
 
     @Override
@@ -519,6 +535,30 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                         friendInfo.setStatus(state);
                         tvFriendStatus.setText(state);
                     }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void showChatInputLayout()
+    {
+        rootRef.child("Friends").child(currentUserId).child(myFriendId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists())
+                {
+                    //Nếu tồn tại thì đã là bạn bè
+                    layout_chat.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    Toast.makeText(ChatWithFriendActivity.this, "Không phải là bạn bè", Toast.LENGTH_SHORT).show();
+                    layout_chat.setVisibility(View.GONE);
                 }
             }
 
