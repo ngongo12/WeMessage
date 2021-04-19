@@ -72,6 +72,10 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.Ho
         {
             Glide.with(context).load(list.get(position).getAvatar()).into(holder.ivAvatar);
         }
+        else
+        {
+            Glide.with(context).load(R.drawable.default_avatar).into(holder.ivAvatar);
+        }
 
         //Ẩn các user ko có trong yêu cầu kết bạn
         myRequestRef.addValueEventListener(new ValueEventListener() {

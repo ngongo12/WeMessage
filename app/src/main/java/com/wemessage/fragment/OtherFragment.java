@@ -26,6 +26,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wemessage.ChangePasswordActivity;
 import com.wemessage.MainActivity;
 import com.wemessage.R;
 import com.wemessage.SettingActivity;
@@ -106,6 +107,13 @@ public class OtherFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 scDark.setChecked(!scDark.isChecked());
+            }
+        });
+
+        layoutRePass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), ChangePasswordActivity.class));
             }
         });
     }
