@@ -1,6 +1,7 @@
 package com.wemessage.adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wemessage.InfoMyFriendActivity;
 import com.wemessage.R;
 import com.wemessage.model.FriendInfo;
 
@@ -56,6 +58,17 @@ public class SearchFriendAdapter extends RecyclerView.Adapter<SearchFriendAdapte
         {
             holder.tvStatus.setText(list.get(position).getStatus());
         }
+
+        holder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (context != null) {
+                    Intent intent = new Intent(context, InfoMyFriendActivity.class);
+                    intent.putExtra("friendId", list.get(position).getUid());
+                    context.startActivity(intent);
+                }
+            }
+        });
     }
 
     @Override

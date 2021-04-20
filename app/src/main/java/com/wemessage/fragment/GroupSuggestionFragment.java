@@ -74,7 +74,7 @@ public class GroupSuggestionFragment extends Fragment {
     }
 
     private void displayRCV() {
-        groupRef.orderByChild("members").addListenerForSingleValueEvent(new ValueEventListener() {
+        groupRef.orderByChild("members").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();

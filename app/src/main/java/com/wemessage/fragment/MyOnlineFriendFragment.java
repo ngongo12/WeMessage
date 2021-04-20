@@ -49,7 +49,7 @@ public class MyOnlineFriendFragment extends Fragment {
         rcv = getView().findViewById(R.id.rcv);
 
         //Set layout cho rcv
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, true);
         rcv.setLayoutManager(layoutManager);
 
         //Khởi tạo các biến dành cho firebase
@@ -67,7 +67,7 @@ public class MyOnlineFriendFragment extends Fragment {
     }
     public void displayRCV()
     {
-        friendRef.addValueEventListener(new ValueEventListener() {
+        friendRef.child(currentUserId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();
@@ -75,10 +75,9 @@ public class MyOnlineFriendFragment extends Fragment {
                 {
                     if(!data.getKey().equals(currentUserId))
                     {
-                        String friendId = data.getKey().toString();
+                        String friendId = data.getKey();
                         list.add(friendId);
                     }
-                    Log.d("Loi", "MyFriend: " + list.size());
                 }
                 adapter.notifyDataSetChanged();
             }

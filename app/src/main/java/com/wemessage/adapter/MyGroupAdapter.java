@@ -43,6 +43,7 @@ public class MyGroupAdapter extends RecyclerView.Adapter<MyGroupAdapter.Holder> 
     MyGroupFragment fragment;
     ArrayList<String> list;
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+    int index = 0;
 
     DatabaseReference messRef, userRef, groupRef;
 
@@ -87,7 +88,7 @@ public class MyGroupAdapter extends RecyclerView.Adapter<MyGroupAdapter.Holder> 
         groupRef.child(id).child("members").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int index = 0;
+
                 for (DataSnapshot dataSnapshot : snapshot.getChildren())
                 {
                     String uid = dataSnapshot.getKey();
@@ -95,14 +96,26 @@ public class MyGroupAdapter extends RecyclerView.Adapter<MyGroupAdapter.Holder> 
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if(index == 0) {
-                                if (snapshot.hasChild("avatar")) {
-                                    Glide.with(context).load(snapshot.child("avatar").getValue().toString()).into(holder.ivAvatar);
+                                try {
+                                    if (snapshot.hasChild("avatar")) {
+                                        Glide.with(context).load(snapshot.child("avatar").getValue().toString()).into(holder.ivAvatar);
+                                        index++;
+                                    }
+                                }catch (Exception e)
+                                {
+
                                 }
                             }
                             else
                             {
-                                if (snapshot.hasChild("avatar")) {
-                                    Glide.with(context).load(snapshot.child("avatar").getValue().toString()).into(holder.ivAvatarR);
+                                try {
+                                    if (snapshot.hasChild("avatar")) {
+                                        Glide.with(context).load(snapshot.child("avatar").getValue().toString()).into(holder.ivAvatarR);
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+
                                 }
                             }
                         }
@@ -155,6 +168,10 @@ public class MyGroupAdapter extends RecyclerView.Adapter<MyGroupAdapter.Holder> 
                     {
                         text += dataSnapshot.child("message").getValue().toString();
                     }
+                    if(dataSnapshot.child("type").getValue().toString().equals("audio"))
+                    {
+                        text += "[File ghi âm]";
+                    }
                     holder.tvMessage.setText(text);
 
                     //Phần thời gian
@@ -202,7 +219,7 @@ public class MyGroupAdapter extends RecyclerView.Adapter<MyGroupAdapter.Holder> 
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if(snapshot.hasChild("last_seen"))
                             {
-                                Log.d("Loi", "last_seen: ");
+
                                 Date lastSeen;
                                 try {
                                     lastSeen = sdf.parse(snapshot.child("last_seen").getValue().toString());
@@ -221,6 +238,7 @@ public class MyGroupAdapter extends RecyclerView.Adapter<MyGroupAdapter.Holder> 
                                     holder.tvMessage.setTypeface(Typeface.DEFAULT);
                                     holder.tvName.setTypeface(Typeface.DEFAULT);
                                 }
+                                Log.d("Loi", "last_seen: " + sdf.format(lastSeen));
                             }
                         }
 

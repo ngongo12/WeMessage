@@ -90,9 +90,16 @@ public class SuggestionFragment extends Fragment {
                     String key = data.getKey();
                     if(!data.getKey().equals(currentUserId))
                     {
-                        FriendInfo item = data.getValue(FriendInfo.class);
-                        //Log.d("Loi", "Suggestion: " + item.getName());
-                        list.add(item);
+                        try {
+                            FriendInfo item = data.getValue(FriendInfo.class);
+                            //Log.d("Loi", "Suggestion: " + item.getName());
+                            list.add(item);
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
+
                     }
                     //Log.d("Loi", "Suggestion: " + list.size());
                 }

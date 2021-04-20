@@ -3,19 +3,34 @@ package com.wemessage;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +45,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,6 +61,8 @@ import com.wemessage.adapter.ReadFriendMessageAdapter;
 import com.wemessage.model.FriendInfo;
 import com.wemessage.model.Messages;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -59,25 +78,46 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     ImageView btnSend, ivPicture, ivMicro, ivEmoji;
     RecyclerView rcv;
     LinearLayout layout_icon;
+    RelativeLayout layout_chat;
     SwipeRefreshLayout swipeLayout;
     int numLimit = 8;
 
+    Handler handler = new Handler();
+    int second = 0;
+    boolean isRunning = true;
+    Runnable runnable;
+
+    // Requesting permission to RECORD_AUDIO
+    private boolean permissionToRecordAccepted = false;
+    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+
+    private static String fileName;
+    private MediaRecorder recorder = null;
+    private MediaPlayer player = null;
+
 
     //Các view của dialog send Image
-    Button btnSendImg;
+    TextView tvTimeRecord;
+    Button btnSendImg, btnSendRecord;
     ImageView ivChoosenImg;
+    AppCompatToggleButton btnRecord;
+
+    BottomSheetDialog imgDialog, audioDialog;
 
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 
     String myFriendId;
     FriendInfo friendInfo;
 
+    Messages item;
+
     //Các biến dành cho firebase
     DatabaseReference rootRef, messageRef;
     FirebaseUser currentUser;
     FirebaseAuth mAuth;
     String currentUserId;
-    StorageReference imgRef;
+    StorageReference imgRef, audioRef;
 
     ArrayList<Messages> list;
 
@@ -101,6 +141,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         rcv = findViewById(R.id.rcv);
         layout_icon = findViewById(R.id.layout_icon);
         swipeLayout = findViewById(R.id.swipeLayout);
+        layout_chat = findViewById(R.id.layout_chat);
 
         //Set layout cho rcv
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -120,6 +161,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         rootRef = FirebaseDatabase.getInstance().getReference();
         messageRef = rootRef.child("Messages");
         imgRef = FirebaseStorage.getInstance().getReference().child("messages");
+        audioRef = FirebaseStorage.getInstance().getReference().child("audio");
 
         //Xử lý toolbar
         setSupportActionBar(toolbar);
@@ -138,6 +180,7 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         tvFriendStatus = toolbar.findViewById(R.id.tvFriendStatus);
 
         getMyFriendInfo();
+        showChatInputLayout();
         //Xử lý adapter
         adapter = new ReadFriendMessageAdapter(list, currentUserId, myFriendId, friendInfo, this);
         rcv.setAdapter(adapter);
@@ -212,6 +255,208 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                 }
             }
         });
+
+        ivMicro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestPermission();
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.friend_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId())
+        {
+            case R.id.delete_friend:
+            {
+                deleteFriend();
+                break;
+            }
+            case R.id.info_friend:
+            {
+                gotoInfoMyFriendActivity();
+                break;
+            }
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void gotoInfoMyFriendActivity() {
+        Intent intent = new Intent(this, InfoMyFriendActivity.class);
+        intent.putExtra("friendId", myFriendId);
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId())
+        {
+            case R.id.hide_message:
+            {
+                hideMessage();
+                break;
+            }
+            case R.id.delete_message:
+            {
+                deleteMessage();
+                break;
+            }
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private void deleteMessage() {
+        //Xóa được tin của mình và của bạn
+        //Nếu là tin của mình thì xóa hẳn
+        //Nếu là tin của bạn thì xóa hẳn bên mình ko ảnh hưởng đến bên bạn
+        //Lấy theo time vì 1 khoảng thời gian chỉ gửi được 1 tin nhắn
+        if (item != null) {
+            String from = item.getFrom();
+            messageRef.child(currentUserId).child(myFriendId)
+                    .child("messages").orderByChild("time").equalTo(item.getTime())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists())
+                            {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren())
+                                {
+                                    //Đã lây được key
+                                    String key = dataSnapshot.getKey();
+                                    //Tin của mình
+                                    if (from.equals(currentUserId))
+                                    {
+                                        dataSnapshot.getRef().removeValue(new DatabaseReference.CompletionListener() {
+                                            @Override
+                                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                                //Cập nhật type bên kia
+                                                messageRef.child(myFriendId).child(currentUserId).child("messages").child(key)
+                                                        .child("type").setValue("delete").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        Toast.makeText(ChatWithFriendActivity.this, "Xóa thành công", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                    else
+                                    {
+                                        dataSnapshot.getRef().removeValue(new DatabaseReference.CompletionListener() {
+                                            @Override
+                                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                                Toast.makeText(ChatWithFriendActivity.this, "Xóa thành công", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                Toast.makeText(ChatWithFriendActivity.this, "Lỗi: không tìm được message ", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+            item = null;
+        }
+        else
+        {
+            Toast.makeText(this, "Lỗi khi lấy message", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void hideMessage() {
+        //Ẩn tin nhắn bên mình
+        //Bên đối diện sẽ vẫn hiện
+        //Ẩn được các loại tin nhắn
+        //Đưa về trạng thái type = hide;
+        //Lấy theo time vì 1 khoảng thời gian chỉ gửi được 1 tin nhắn
+        if (item != null) {
+            messageRef.child(currentUserId).child(myFriendId)
+                    .child("messages").orderByChild("time").equalTo(item.getTime())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists())
+                            {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren())
+                                {
+                                    //Đã lây được key
+                                    //Bắt đầu ẩn
+                                    dataSnapshot.getRef().child("type").setValue("hide").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Toast.makeText(ChatWithFriendActivity.this, "Ẩn thành công", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                Toast.makeText(ChatWithFriendActivity.this, "Lỗi: không tìm được message ", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+            item = null;
+        }
+        else
+        {
+            Toast.makeText(this, "Lỗi khi lấy message", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void deleteFriend() {
+        Snackbar.make(toolbar, "Bạn muốn xóa bạn với: " + tvFriendName.getText().toString() , BaseTransientBottomBar.LENGTH_SHORT)
+                .setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Xóa bên mình
+                        rootRef.child("Friends").child(currentUserId).child(myFriendId)
+                                .removeValue(new DatabaseReference.CompletionListener() {
+                                    @Override
+                                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                        //Xóa được bên mình thì xóa bên đối phương
+                                        rootRef.child("Friends").child(myFriendId).child(currentUserId)
+                                                .removeValue(new DatabaseReference.CompletionListener() {
+                                                    @Override
+                                                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                                        Toast.makeText(ChatWithFriendActivity.this, "Đã xóa bạn bè thành công", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    }
+                                });
+                        finish();
+                    }
+                })
+                .setTextColor(getResources().getColor(R.color.snackbar_text))
+                .setActionTextColor(getResources().getColor(R.color.snackbar_text))
+                .show();
+    }
+
+    public void getMessage(Messages messages)
+    {
+        //Dùng để giữ biến message muốn xóa
+        item = messages;
     }
 
     private void sendPicture() {
@@ -300,6 +545,30 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         });
     }
 
+    public void showChatInputLayout()
+    {
+        rootRef.child("Friends").child(currentUserId).child(myFriendId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists())
+                {
+                    //Nếu tồn tại thì đã là bạn bè
+                    layout_chat.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    Toast.makeText(ChatWithFriendActivity.this, "Không phải là bạn bè", Toast.LENGTH_SHORT).show();
+                    layout_chat.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -320,13 +589,13 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     }
 
     private void openDialogSendImage() {
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        imgDialog = new BottomSheetDialog(this);
         View view = LayoutInflater.from(getApplicationContext()).inflate(
                 R.layout.dialog_send_image,
                 null
         );
 
-        bottomSheetDialog.setContentView(view);
+        imgDialog.setContentView(view);
 
         btnSendImg = view.findViewById(R.id.btnSendImg);
         ivChoosenImg = view.findViewById(R.id.ivChoosenImg);
@@ -335,8 +604,8 @@ public class ChatWithFriendActivity extends AppCompatActivity {
         Glide.with(getApplicationContext()).load(uriImage).into(ivChoosenImg);
 
         //Hiển thị dialog
-        bottomSheetDialog.create();
-        bottomSheetDialog.show();
+        imgDialog.create();
+        imgDialog.show();
 
         //Xử lý nút gửi hình
         btnSendImg.setOnClickListener(new View.OnClickListener() {
@@ -375,9 +644,96 @@ public class ChatWithFriendActivity extends AppCompatActivity {
                             }
                         });
                 //Đóng dialog
-                bottomSheetDialog.dismiss();
+                imgDialog.dismiss();
             }
         });
+    }
+
+    public void openRecordAudioDialog()
+    {
+        fileName = getExternalCacheDir().getAbsolutePath() + "temp.3gp";
+        audioDialog = new BottomSheetDialog(this);
+        View view = LayoutInflater.from(getApplicationContext()).inflate(
+                R.layout.dialog_send_voice,
+                null
+        );
+
+        audioDialog.setContentView(view);
+
+        btnSendRecord = view.findViewById(R.id.btnSendRecord);
+        btnRecord = view.findViewById(R.id.tgRecord);
+        tvTimeRecord = view.findViewById(R.id.tvTimeRecord);
+
+        btnRecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (btnRecord.isChecked())
+                {
+                    isRunning = true;
+                    startRecording();
+                    showTimeRecord();
+                    btnRecord.setEnabled(false);
+                }
+                else
+                {
+                    stopRecording();
+                }
+                btnSendRecord.setVisibility(View.VISIBLE);
+            }
+        });
+
+        audioDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                stopRecording();
+                second = 0;
+                isRunning = false;
+            }
+        });
+
+
+        //Hiển thị dialog
+        audioDialog.create();
+        audioDialog.show();
+
+        //Xử lý nút gửi hình
+        btnSendRecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadAudio();
+                //Đóng dialog
+                audioDialog.dismiss();
+            }
+        });
+    }
+
+    public void showTimeRecord()
+    {
+        if(tvTimeRecord != null && isRunning)
+        {
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    String time = "";
+                    int s = second % 60;
+                    int m = second / 60;
+                    if (m < 10)
+                    {
+                        time += "0";
+                    }
+                    time += m+":";
+                    if (s < 10)
+                    {
+                        time += "0";
+                    }
+                    time += s;
+                    tvTimeRecord.setText(time);
+                    second++;
+                    showTimeRecord();
+                }
+            };
+            handler.postDelayed(runnable, 1000);
+        }
     }
 
     public void send(String content, String type)
@@ -437,6 +793,60 @@ public class ChatWithFriendActivity extends AppCompatActivity {
 
     }
 
+    //Record
+    private void startRecording() {
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setOutputFile(fileName);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            recorder.prepare();
+        } catch (IOException e) {
+            Log.e("Loi", "prepare() failed");
+        }
+
+        recorder.start();
+    }
+
+    private void stopRecording() {
+        if (recorder != null) {
+            recorder.stop();
+            recorder.release();
+            recorder = null;
+        }
+    }
+
+    public void uploadAudio()
+    {
+        Uri uri = Uri.fromFile(new File(fileName));
+        //Tạo id cho audio
+        String id = currentUserId.substring(0, 5) + LocalDateTime.now().toString().substring(5);
+        Log.d("Loi", "id  " + id);
+        audioRef.child(id).putFile(uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                if (task.isSuccessful())
+                {
+                    audioRef.child(id).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            //Lấy được link tiến hành lưu trữ vào database
+                            send(uri.toString(), "audio");
+                            Toast.makeText(ChatWithFriendActivity.this, "Gửi thành công", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                else
+                {
+                    Toast.makeText(ChatWithFriendActivity.this, "Gửi thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
+
 
     @Override
     protected void onStart() {
@@ -465,5 +875,80 @@ public class ChatWithFriendActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 999: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openRecordAudioDialog();
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Toast.makeText(this, "khong co permission", Toast.LENGTH_SHORT).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+
+    }
+    
+    public void requestPermission()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.RECORD_AUDIO)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Record audio needed");
+                    builder.setPositiveButton(android.R.string.ok, null);
+                    builder.setMessage("please confirm Record audio access");//TODO put real question
+                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @TargetApi(Build.VERSION_CODES.M)
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            requestPermissions(
+                                    new String[]
+                                            {Manifest.permission.RECORD_AUDIO}
+                                    , 999);
+                        }
+                    });
+                    builder.show();
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(this,
+                            new String[]
+                                    {Manifest.permission.RECORD_AUDIO},
+                            999);
+
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
+            } else {
+                openRecordAudioDialog();
+            }
+        }
+        else {
+            openRecordAudioDialog();
+        }
     }
 }

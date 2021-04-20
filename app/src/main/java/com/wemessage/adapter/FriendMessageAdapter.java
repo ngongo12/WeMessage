@@ -110,6 +110,10 @@ public class FriendMessageAdapter extends RecyclerView.Adapter<FriendMessageAdap
                     {
                         text += dataSnapshot.child("message").getValue().toString();
                     }
+                    if (dataSnapshot.child("type").getValue().toString().equals("audio"))
+                    {
+                        text += "[File ghi âm]";
+                    }
                     holder.tvMessage.setText(text);
 
                     //Phần thời gian

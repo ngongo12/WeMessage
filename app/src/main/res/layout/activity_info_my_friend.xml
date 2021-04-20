@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    style="@style/SubBackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:elevation="5dp"
+        android:background="@null"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <ImageView
+        android:id="@+id/ivWallpaper"
+        android:src="@drawable/default_wallpaper"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:scaleType="fitXY"
+        android:layout_height="230dp"/>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="150sp"
+        android:layout_gravity="center"
+        android:layout_below="@id/ivWallpaper"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-70dp"
+        android:foreground="@drawable/rounded_image"
+        >
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:src="@drawable/default_avatar"
+            android:scaleType="fitCenter"
+            android:layout_width="100dp"
+            android:layout_height="100dp"/>
+    </androidx.cardview.widget.CardView>
+    <TextView
+        android:id="@+id/tvName"
+        android:text="Tên Của Tui"
+        android:textSize="20sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:layout_below="@id/cover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvName"
+        android:layout_margin="20dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:text="Ngày sinh :"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="22-07-1999"
+                android:id="@+id/tvBirth"
+                android:textSize="20dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:text="Giới tính :"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nam"
+                android:id="@+id/tvGender"
+                android:textSize="20dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:text="Thông tin :"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Người dùng mới"
+                android:id="@+id/tvInfo"
+                android:textSize="20dp"/>
+        </LinearLayout>
+        <Button
+            android:id="@+id/btnChat"
+            android:background="@drawable/button_gradient_blue"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Gửi tin nhắn"
+            android:layout_margin="8dp"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            />
+        <Button
+            android:id="@+id/btnRequest"
+            android:background="@drawable/button_gradient_blue"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Yêu cầu kết bạn"
+            android:layout_margin="8dp"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            />
+        <Button
+            android:id="@+id/btnCancelRequest"
+            android:background="@drawable/button_gradient_blue"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:text="Hủy yêu cầu"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            />
+
+        <Button
+            android:id="@+id/btnDeleteFriend"
+            android:background="@drawable/button_gradient_blue"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Xóa bạn bè"
+            android:visibility="gone"
+            android:layout_margin="8dp"
+            android:textColor="@color/white"
+            />
+
+        <Button
+            android:id="@+id/btnAccept"
+            android:background="@drawable/button_gradient_blue"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Chấp nhận"
+            android:visibility="gone"
+            android:layout_margin="8dp"
+            android:textColor="@color/white"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>
