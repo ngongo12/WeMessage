@@ -103,18 +103,12 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 });
     }
 
-    private void gotoMainActivity() {
-        Intent intent = new Intent(ChangePasswordActivity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
     private boolean validate()
     {
         if (newPass.length() < 6)
         {
             tilNewPass.setError("Mật khẩu ít nhất phải 6 ký tự");
+            return false;
         }
         if (!newPass.equals(reNewPass))
         {

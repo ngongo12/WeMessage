@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -130,6 +131,10 @@ public class SettingActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!validate())
+                {
+                    return;
+                }
 
                 //Lưu lại thông tin
 
@@ -362,6 +367,19 @@ public class SettingActivity extends AppCompatActivity {
                 });
             }
         }
+    }
+
+    public boolean validate(){
+
+        if (etName.getText().length() == 0) {
+            Toast.makeText(this, "Tên không được bỏ trống !", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (etInfo.getText().length() == 0){
+            Toast.makeText(this, "TThông tin không được bỏ trống !", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     @Override
