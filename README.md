@@ -4,6 +4,7 @@
 
 ## LoginScreen
 ![solarized symmetry](https://github.com/ngongo12/WeMessage/blob/master/img/Picture1.jpg)
+<img src='https://github.com/ngongo12/WeMessage/blob/master/img/Picture1.jpg' width='100'>
 
 ## RegisterScreen
 ![solarized symmetry](https://github.com/ngongo12/WeMessage/blob/master/img/Picture2.jpg)
