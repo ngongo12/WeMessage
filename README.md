@@ -3,19 +3,18 @@
 ## Mô tả: Ứng dụng chat sử dụng firebase để lưu trữ dữ liệu
 
 ## LoginScreen
-![solarized symmetry](https://github.com/ngongo12/WeMessage/blob/master/img/Picture1.jpg)
-<img src='https://github.com/ngongo12/WeMessage/blob/master/img/Picture1.jpg' width='300'>
+<img src='https://github.com/ngongo12/WeMessage/blob/master/img/Picture1.jpg' width='400'>
 
 ## RegisterScreen
-![solarized symmetry](https://github.com/ngongo12/WeMessage/blob/master/img/Picture2.jpg)
+<img src='https://github.com/ngongo12/WeMessage/blob/master/img/Picture2.jpg' width='400'>
 
 ## Mesage Screen
-![solarized symmetry](https://github.com/ngongo12/WeMessage/blob/master/img/Picture8.jpg) 
-![solarized symmetry](https://github.com/ngongo12/WeMessage/blob/master/img/Picture9.jpg)
+<img src='https://github.com/ngongo12/WeMessage/blob/master/img/Picture8.jpg' width='400'>
+<img src='https://github.com/ngongo12/WeMessage/blob/master/img/Picture9.jpg' width='400'>
 
 ## Orther Screens
-![solarized symmetry](https://github.com/ngongo12/WeMessage/blob/master/img/Picture3.jpg)
-![solarized symmetry](https://github.com/ngongo12/WeMessage/blob/master/img/Picture4.jpg)
-![solarized symmetry](https://github.com/ngongo12/WeMessage/blob/master/img/Picture5.jpg)
-![solarized symmetry](https://github.com/ngongo12/WeMessage/blob/master/img/Picture6.jpg)
-![solarized symmetry](https://github.com/ngongo12/WeMessage/blob/master/img/Picture7.jpg)
+<img src='https://github.com/ngongo12/WeMessage/blob/master/img/Picture3.jpg' width='400'>
+<img src='https://github.com/ngongo12/WeMessage/blob/master/img/Picture4.jpg' width='400'>
+<img src='https://github.com/ngongo12/WeMessage/blob/master/img/Picture5.jpg' width='400'>
+<img src='https://github.com/ngongo12/WeMessage/blob/master/img/Picture6.jpg' width='400'>
+<img src='https://github.com/ngongo12/WeMessage/blob/master/img/Picture7.jpg' width='400'>
